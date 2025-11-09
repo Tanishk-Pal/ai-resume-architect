@@ -39,11 +39,45 @@ document.addEventListener('DOMContentLoaded', function () {
             projects: Array.from(document.querySelectorAll('#projects-list .dynamic-entry')).map(e => ({ title: e.querySelector('.proj-title').value, desc: e.querySelector('.proj-desc').value.split('\n').filter(line => line.trim() !== '').join('') }))
         };
 
+        // Call the function to save user data to the server
+        if (data.name && data.email) {
+            saveUserData({
+                name: data.name,
+                email: data.email,
+                phone: data.phone,
+                address: data.address
+            });
+        }
+
         const picFile = document.getElementById('profile-picture-input').files[0];
         const reader = new FileReader();
         reader.onload = e => { data.profilePic = e.target.result; generatePreview(data); };
         if (picFile) reader.readAsDataURL(picFile); else generatePreview(data);
     });
+
+    // --- NEW: Function to send data to your LIVE Render backend ---
+    async function saveUserData(userData) {
+        try {
+            const backendUrl = 'https://ai-resume-architect-un01.onrender.com/api/save-user';
+
+            const response = await fetch(backendUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData),
+            });
+
+            if (response.ok) {
+                console.log('User data saved successfully.');
+            } else {
+                console.error('Failed to save user data.');
+            }
+        } catch (error) {
+            console.error('Error sending data to server:', error);
+        }
+    }
+
 
     // --- FINAL VERSION: Function to generate the exact template with all fixes ---
     function generatePreview(data) {
