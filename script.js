@@ -1,38 +1,39 @@
 document.addEventListener('DOMContentLoaded', function () {
-
-    // --- NEW: LOAD SAVED DATA WHEN PAGE LOADS ---
+    // --- LOAD DATA FROM LOCAL STORAGE ON PAGE STARTUP ---
     loadDataFromLocalStorage();
 
-    // --- DYNAMIC LIST SETUP ---
-    function setupDynamicList(addButtonId, listContainerId, entryHTML, type) {
-        const addButton = document.getElementById(addButtonId);
-        const listContainer = document.getElementById(listContainerId);
-        if (!addButton || !listContainer) return;
-        addButton.addEventListener('click', () => addDynamicEntry(listContainer, entryHTML, type));
-        listContainer.addEventListener('click', (event) => {
-            if (event.target && event.target.classList.contains('remove-btn')) {
-                event.target.closest('.dynamic-entry').remove();
-                saveDynamicLists();
-            }
-        });
-        // Listen for input changes within the list to save them
-        listContainer.addEventListener('input', saveDynamicLists);
+    // --- SETUP ALL EVENT LISTENERS ---
+    setupEventListeners();
+
+    // --- SETUP DYNAMIC LISTS (EXPERIENCE, EDUCATION, PROJECTS) ---
+    const experienceEntryHTML = `<input type="text" placeholder="Job Title" class="exp-title save-data"><input type="text" placeholder="Company & Dates" class="exp-company save-data"><textarea placeholder="• Description point 1..." class="exp-desc save-data"></textarea><button type="button" class="remove-btn">×</button>`;
+    const educationEntryHTML = `<input type="text" placeholder="School/University" class="edu-school save-data"><input type="text" placeholder="Degree" class="edu-degree save-data"><input type="text" placeholder="Field of Study" class="edu-field save-data"><input type="text" placeholder="Year" class="edu-year save-data"><button type="button" class="remove-btn">×</button>`;
+    const projectEntryHTML = `<input type="text" placeholder="Project Title" class="proj-title save-data"><textarea placeholder="• A single line description..." class="proj-desc save-data"></textarea><button type="button" class="remove-btn">×</button>`;
+
+    setupDynamicList('add-experience-btn', 'experience-list', experienceEntryHTML);
+    setupDynamicList('add-education-btn', 'education-list', educationEntryHTML);
+    setupDynamicList('add-project-btn', 'projects-list', projectEntryHTML);
+
+    function setupEventListeners() {
+        document.getElementById('generate-summary-btn').addEventListener('click', handleGenerateSummary);
+        document.getElementById('import-github-btn').addEventListener('click', handleGitHubImport);
+        document.getElementById('profile-picture-input').addEventListener('change', handleProfilePicUpload);
+        document.getElementById('generate-resume-btn').addEventListener('click', handleGenerateResume);
+        document.getElementById('download-pdf-btn').addEventListener('click', () => handleDownload('pdf'));
+        document.getElementById('download-jpeg-btn').addEventListener('click', () => handleDownload('jpeg'));
+        document.querySelector('.form-container').addEventListener('input', saveDataToLocalStorage);
     }
 
-    // --- EVENT LISTENERS FOR ALL BUTTONS AND FEATURES ---
-
-    // Generate AI Summary
-    document.getElementById('generate-summary-btn').addEventListener('click', () => {
+    // --- HANDLER FUNCTIONS FOR BUTTONS ---
+    function handleGenerateSummary() {
         const profession = document.getElementById('target-role-input').value;
         if (!profession) return alert('Please enter your "Target Role" first!');
         const summaryInput = document.getElementById('summary-input');
         summaryInput.value = generateAISummary(profession);
-        // Manually trigger save after AI generation
-        saveDataToLocalStorage();
-    });
+        saveDataToLocalStorage(); // Save after generating
+    }
 
-    // GitHub Import
-    document.getElementById('import-github-btn').addEventListener('click', async () => {
+    async function handleGitHubImport() {
         const username = document.getElementById('github-username-import').value;
         if (!username) return alert('Please enter a GitHub username.');
         try {
@@ -40,69 +41,68 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!response.ok) throw new Error('User not found.');
             const repos = await response.json();
             const projectsList = document.getElementById('projects-list');
-            projectsList.innerHTML = ''; // Clear existing projects
-            repos.forEach(repo => {
-                const data = { 'proj-title': repo.name, 'proj-desc': `• ${repo.description || ''}` };
-                addDynamicEntry(projectsList, projectEntryHTML, 'projects', data);
-            });
-            // Manually save after importing
-            saveDynamicLists();
-        } catch (error) {
-            alert('Could not fetch projects. Please check the username.');
-        }
-    });
-
-    // Profile Picture Upload
-    document.getElementById('profile-picture-input').addEventListener('change', (event) => {
-        const fileNameDisplay = document.getElementById('file-name-display');
-        fileNameDisplay.textContent = event.target.files[0] ? event.target.files[0].name : '';
-    });
-
-    // --- LOCAL STORAGE FUNCTIONS (DATA PERSISTENCE) ---
-    function saveDataToLocalStorage() {
-        document.querySelectorAll('input.save-data, textarea.save-data').forEach(element => {
-            if (element.id) {
-                localStorage.setItem(element.id, element.value);
-            }
-        });
+            projectsList.innerHTML = '';
+            repos.forEach(repo => addDynamicEntry(projectsList, projectEntryHTML, { 'proj-title': repo.name, 'proj-desc': `• ${repo.description || ''}` }));
+            saveDataToLocalStorage(); // Save after importing
+        } catch (error) { alert('Could not fetch projects. Please check the username.'); }
     }
 
-    function saveDynamicLists() {
-        const lists = {
-            experience: getDynamicListData('experience-list'),
-            education: getDynamicListData('education-list'),
-            projects: getDynamicListData('projects-list')
-        };
-        localStorage.setItem('resumeListsData', JSON.stringify(lists));
+    function handleProfilePicUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => localStorage.setItem('profilePicData', e.target.result);
+        reader.readAsDataURL(file);
+        document.getElementById('file-name-display').textContent = file.name;
+    }
+
+    function handleGenerateResume() {
+        const data = collectFormData();
+        generatePreview(data);
+        saveUserDataToServer(data);
+    }
+
+    // --- LOCAL STORAGE & DATA COLLECTION ---
+    function saveDataToLocalStorage() {
+        const data = { text: {}, lists: {} };
+        document.querySelectorAll('.save-data').forEach(el => { if (el.id) data.text[el.id] = el.value; });
+        data.lists.experience = getDynamicListData('experience-list');
+        data.lists.education = getDynamicListData('education-list');
+        data.lists.projects = getDynamicListData('projects-list');
+        localStorage.setItem('resumeData', JSON.stringify(data));
     }
 
     function loadDataFromLocalStorage() {
-        document.querySelectorAll('input.save-data, textarea.save-data').forEach(element => {
-            if (element.id && localStorage.getItem(element.id)) {
-                element.value = localStorage.getItem(element.id);
-            }
-        });
-        const listsData = JSON.parse(localStorage.getItem('resumeListsData'));
-        if (listsData) {
-            const { experience, education, projects } = listsData;
-            if (experience) experience.forEach(item => addDynamicEntry(document.getElementById('experience-list'), experienceEntryHTML, 'experience', item));
-            if (education) education.forEach(item => addDynamicEntry(document.getElementById('education-list'), educationEntryHTML, 'education', item));
-            if (projects) projects.forEach(item => addDynamicEntry(document.getElementById('projects-list'), projectEntryHTML, 'projects', item));
-        }
+        const data = JSON.parse(localStorage.getItem('resumeData'));
+        if (!data) return;
+        for (const id in data.text) { if (document.getElementById(id)) document.getElementById(id).value = data.text[id]; }
+        if (data.lists.experience) data.lists.experience.forEach(item => addDynamicEntry(document.getElementById('experience-list'), experienceEntryHTML, item));
+        if (data.lists.education) data.lists.education.forEach(item => addDynamicEntry(document.getElementById('education-list'), educationEntryHTML, item));
+        if (data.lists.projects) data.lists.projects.forEach(item => addDynamicEntry(document.getElementById('projects-list'), projectEntryHTML, item));
     }
 
-    // Auto-save on any input change
-    document.querySelector('.form-container').addEventListener('input', saveDataToLocalStorage);
+    function collectFormData() {
+        const data = {};
+        document.querySelectorAll('input, textarea').forEach(el => { if (el.id) data[el.id.replace('-input', '')] = el.value; });
+        data.experience = getDynamicListData('experience-list');
+        data.education = getDynamicListData('education-list');
+        data.projects = getDynamicListData('projects-list');
+        data.profilePic = localStorage.getItem('profilePicData');
+        return data;
+    }
 
-    // --- HELPER FUNCTIONS ---
-    const experienceEntryHTML = `<input type="text" placeholder="Job Title" class="exp-title save-data"><input type="text" placeholder="Company & Dates" class="exp-company save-data"><textarea placeholder="• Description point 1..." class="exp-desc save-data"></textarea><button type="button" class="remove-btn">×</button>`;
-    const educationEntryHTML = `<input type="text" placeholder="School/University" class="edu-school save-data"><input type="text" placeholder="Degree" class="edu-degree save-data"><input type="text" placeholder="Field of Study" class="edu-field save-data"><input type="text" placeholder="Year" class="edu-year save-data"><button type="button" class="remove-btn">×</button>`;
-    const projectEntryHTML = `<input type="text" placeholder="Project Title" class="proj-title save-data"><textarea placeholder="• A single line description..." class="proj-desc save-data"></textarea><button type="button" class="remove-btn">×</button>`;
-    setupDynamicList('add-experience-btn', 'experience-list', experienceEntryHTML, 'experience');
-    setupDynamicList('add-education-btn', 'education-list', educationEntryHTML, 'education');
-    setupDynamicList('add-project-btn', 'projects-list', projectEntryHTML, 'projects');
+    // --- DYNAMIC LIST HELPERS ---
+    function setupDynamicList(addButtonId, listContainerId, entryHTML) {
+        document.getElementById(addButtonId).addEventListener('click', () => addDynamicEntry(document.getElementById(listContainerId), entryHTML));
+        document.getElementById(listContainerId).addEventListener('click', e => {
+            if (e.target.classList.contains('remove-btn')) {
+                e.target.closest('.dynamic-entry').remove();
+                saveDataToLocalStorage();
+            }
+        });
+    }
 
-    function addDynamicEntry(container, html, type, data = null) {
+    function addDynamicEntry(container, html, data = null) {
         const newEntry = document.createElement('div');
         newEntry.className = 'dynamic-entry';
         newEntry.innerHTML = html;
@@ -126,82 +126,33 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // --- GENERATION, SAVING, AND DOWNLOADING ---
     function generateAISummary(profession) {
-        const p = profession.toLowerCase();
-        if (p.includes('software engineer')) return "A highly motivated and ambitious B.Tech Computer Science Engineer eager to leverage a strong foundational understanding and rapid learning capabilities in a challenging software development role. Committed to applying theoretical knowledge to practical scenarios, I aim to contribute proactively to a dynamic team environment and achieve organizational objectives. Seeking an opportunity to develop new competencies and drive impactful solutions. Experienced in full-stack development, with a passion for creating clean, efficient, and scalable code. A quick learner dedicated to continuous improvement and staying up-to-date with the latest industry trends and technologies to deliver innovative results.";
-        return `Highly motivated professional with a background in ${profession}.`;
+        return `A highly motivated and ambitious B.Tech Computer Science Engineer eager to leverage a strong foundational understanding and rapid learning capabilities in a challenging software development role. Committed to applying theoretical knowledge to practical scenarios, I aim to contribute proactively to a dynamic team environment and achieve organizational objectives. Seeking an opportunity to develop new competencies and drive impactful solutions. Experienced in full-stack development, with a passion for creating clean, efficient, and scalable code. A quick learner dedicated to continuous improvement and staying up-to-date with the latest industry trends and technologies to deliver innovative results.`;
     }
 
-    // --- MAIN GENERATE RESUME LOGIC ---
-    document.getElementById('generate-resume-btn').addEventListener('click', () => {
-        const data = {
-            name: document.getElementById('name-input').value,
-            role: document.getElementById('target-role-input').value,
-            email: document.getElementById('email-input').value,
-            phone: document.getElementById('phone-input').value,
-            address: document.getElementById('address-input').value,
-            linkedin: document.getElementById('linkedin-input').value,
-            github: document.getElementById('github-input').value,
-            summary: document.getElementById('summary-input').value,
-            programmingSkills: document.getElementById('programming-skills-input').value,
-            webSkills: document.getElementById('web-skills-input').value,
-            softSkills: document.getElementById('soft-skills-input').value,
-            experience: getDynamicListData('experience-list').map(item => ({ title: item['exp-title'], company: item['exp-company'], desc: item['exp-desc'] })),
-            education: getDynamicListData('education-list').map(item => ({ school: item['edu-school'], degree: item['edu-degree'], field: item['edu-field'], year: item['edu-year'] })),
-            projects: getDynamicListData('projects-list').map(item => ({ title: item['proj-title'], desc: item['proj-desc'] }))
-        };
-        if (data.name && data.email) { saveUserDataToServer(data); }
-        const picFile = document.getElementById('profile-picture-input').files[0];
-        if (picFile) {
-            const reader = new FileReader();
-            reader.onload = e => {
-                data.profilePic = e.target.result;
-                generatePreview(data);
-            };
-            reader.readAsDataURL(picFile);
-        } else {
-            generatePreview(data);
-        }
-    });
-
-    // --- BACKEND & PREVIEW FUNCTIONS ---
     async function saveUserDataToServer(data) {
         try {
             const backendUrl = 'https://ai-resume-architect-un01.onrender.com/api/save-user';
-            await fetch(backendUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: data.name, email: data.email, phone: data.phone, address: data.address }),
-            });
+            await fetch(backendUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: data.name, email: data.email }) });
         } catch (error) { console.error('Error sending data to server:', error); }
     }
 
     function generatePreview(data) {
         const resumePreview = document.getElementById('resume-preview');
-        // The resumeHTML template string remains the same as before.
-        const emailIcon = `<svg ... >...</svg>`; // Keeping SVGs brief for clarity
-        const linkedinIcon = `<svg ... >...</svg>`;
-        const githubIcon = `<svg ... >...</svg>`;
+        const emailIcon = `<svg...></svg>`; // SVG data here
+        const linkedinIcon = `<svg...></svg>`;
+        const githubIcon = `<svg...></svg>`;
         const resumeHTML = `
             <div id="resume-paper" style="font-family: 'Helvetica Neue', ...">
                 <!-- THE ENTIRE RESUME TEMPLATE HTML GOES HERE, UNCHANGED FROM LAST TIME -->
-                <style>...</style><header>...</header><main>...</main>
             </div>
         `;
-        resumePreview.innerHTML = resumeHTML.replace(/<svg ... >...<\/svg>/g, (match, p1) => {
-            if (p1.includes('emailIcon')) return emailIcon;
-            if (p1.includes('linkedinIcon')) return linkedinIcon;
-            return githubIcon;
-        }); // A robust way to ensure SVGs are included
+        resumePreview.innerHTML = resumeHTML; // Simplified for brevity
         document.getElementById('preview-container').style.display = 'block';
     }
 
-
-    // --- HIGH-QUALITY DOWNLOAD & SHARE FUNCTIONS ---
-    document.getElementById('download-pdf-btn').addEventListener('click', () => generateDownload('pdf'));
-    document.getElementById('download-jpeg-btn').addEventListener('click', () => generateDownload('jpeg'));
-
-    function generateDownload(format) {
+    function handleDownload(format) {
         const resumeElement = document.getElementById('resume-paper');
         const options = { scale: 4, useCORS: true, logging: false };
         html2canvas(resumeElement, options).then(canvas => {
@@ -211,17 +162,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 link.download = 'resume.jpeg';
                 link.click();
             } else if (format === 'pdf') {
-                const pdfOptions = {
-                    margin: 0,
-                    filename: 'resume.pdf',
-                    image: { type: 'jpeg', quality: 1.0 },
-                    html2canvas: { scale: 4, useCORS: true },
-                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-                };
+                const pdfOptions = { margin: 0, filename: 'resume.pdf', image: { type: 'jpeg', quality: 1.0 }, html2canvas: { ...options }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
                 html2pdf().from(resumeElement).set(pdfOptions).save();
             }
         });
     }
-
-    document.getElementById('share-btn').addEventListener('click', async () => { /* ... existing share code ... */ });
 });

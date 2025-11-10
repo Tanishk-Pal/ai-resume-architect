@@ -9,10 +9,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-
-    <!-- Libraries for PDF and JPEG Generation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+        integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+        integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 
 <body>
@@ -22,13 +24,9 @@
             <h1>AI Resume Architect</h1>
             <span class="developer-credit-top">A Tanishk Pal Project</span>
         </div>
-        <div class="top-nav">
-            <button type="button" class="nav-btn active">Resume Generator</button>
-        </div>
     </header>
 
     <main class="main-content">
-        <!-- The Form Container -->
         <section class="form-container">
             <div class="form-header">
                 <h2>Enter Your Details</h2>
@@ -67,7 +65,7 @@
 
             <div class="form-section">
                 <div class="section-header">
-                    <h3>Career Objective / Bio</h3>
+                    <h3>Career Objective</h3>
                     <button type="button" id="generate-summary-btn" class="ai-btn">✨ Generate with AI</button>
                 </div>
                 <textarea id="summary-input" class="save-data"
@@ -107,7 +105,6 @@
             </div>
         </section>
 
-        <!-- Resume Preview and Actions Container -->
         <section id="preview-container" class="preview-container" style="display: none;">
             <div id="resume-preview"></div>
             <div class="actions-container">
@@ -120,7 +117,6 @@
             </div>
         </section>
     </main>
-
     <script src="script.js"></script>
 </body>
 

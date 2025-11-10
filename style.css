@@ -1,6 +1,10 @@
 /* --- GLOBAL STYLES --- */
+:root {
+    --primary-color: #4f46e5;
+}
+
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', sans-serif;
     margin: 0;
     background-color: #f7f8fa;
     color: #1a1a1a;
@@ -24,41 +28,12 @@ body {
 .header-title h1 {
     margin: 0;
     font-size: 22px;
-    font-weight: 600;
 }
 
 .developer-credit-top {
     font-size: 12px;
-    font-weight: 500;
     color: #888;
     margin-top: 2px;
-}
-
-.top-nav {
-    display: flex;
-    gap: 8px;
-    background-color: #f0f2f5;
-    padding: 4px;
-    border-radius: 8px;
-}
-
-.nav-btn {
-    font-family: 'Inter', sans-serif;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    background-color: transparent;
-    color: #555;
-    transition: all .2s ease;
-}
-
-.nav-btn.active {
-    background-color: #fff;
-    color: #1a1a1a;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
 }
 
 /* --- MAIN LAYOUT --- */
@@ -67,7 +42,7 @@ body {
     flex-wrap: wrap;
     justify-content: center;
     gap: 32px;
-    padding: 32px;
+    padding: 24px;
     align-items: flex-start;
 }
 
@@ -78,19 +53,18 @@ body {
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
     flex: 1;
-    min-width: 300px;
-    /* Prevents extreme squishing */
+    min-width: 320px;
 }
 
 .form-container {
-    max-width: 800px;
-    animation: fadeInSlideUp 0.8s ease-out forwards;
+    max-width: 700px;
+    animation: fadeInSlideUp 0.7s ease-out forwards;
 }
 
 .preview-container {
-    max-width: 800px;
+    max-width: 700px;
     position: sticky;
-    top: 100px;
+    top: 90px;
 }
 
 /* --- FORM STYLES --- */
@@ -102,7 +76,6 @@ body {
 .form-header h2 {
     margin: 0;
     font-size: 24px;
-    font-weight: 600;
 }
 
 .form-section {
@@ -116,9 +89,7 @@ body {
 
 .form-section h3 {
     font-size: 16px;
-    font-weight: 600;
-    margin-top: 0;
-    margin-bottom: 16px;
+    margin: 0 0 16px;
 }
 
 input,
@@ -136,7 +107,7 @@ textarea {
 input:focus,
 textarea:focus {
     outline: 0;
-    border-color: #4f46e5;
+    border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(79, 70, 229, .1);
 }
 
@@ -145,20 +116,18 @@ textarea {
     resize: vertical;
 }
 
-#summary-input {
-    min-height: 200px;
+.grid-container,
+.skills-grid {
+    display: grid;
+    gap: 16px;
 }
 
 .grid-container {
-    display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
 }
 
 .skills-grid {
-    display: grid;
     grid-template-columns: 1fr;
-    gap: 16px;
 }
 
 .file-upload-label {
@@ -169,9 +138,7 @@ textarea {
     padding: 12px 14px;
     border: 1px dashed #d9dce1;
     border-radius: 8px;
-    background-color: #f7f8fa;
     cursor: pointer;
-    text-align: center;
 }
 
 .file-input {
@@ -185,7 +152,14 @@ textarea {
     margin-bottom: 16px;
 }
 
+.dynamic-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
 .dynamic-entry {
+    position: relative;
     border: 1px solid #e6e8eb;
     padding: 16px;
     border-radius: 8px;
@@ -194,58 +168,65 @@ textarea {
     gap: 12px;
 }
 
-.dynamic-list {
+.remove-btn {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    background-color: #ef4444;
+    color: #fff;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
     display: flex;
-    flex-direction: column;
-    gap: 16px;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(.8);
+    transition: all .2s ease;
+}
+
+.dynamic-entry:hover .remove-btn {
+    opacity: 1;
+    transform: scale(1);
 }
 
 .form-footer {
     padding: 24px;
 }
 
-.generate-btn {
+/* --- BUTTONS --- */
+button {
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.generate-btn,
+.action-btn {
     width: 100%;
     padding: 14px;
     font-size: 16px;
-    font-weight: 600;
-    color: #fff;
-    background-color: #4f46e5;
-    border: none;
     border-radius: 8px;
-    cursor: pointer;
+    border: none;
+    color: #fff;
 }
 
-/* --- PREVIEW & ACTIONS --- */
-#resume-preview {
-    height: 60vh;
-    overflow-y: auto;
-    padding: 20px;
-}
-
-.actions-container {
-    padding: 20px;
-    text-align: center;
-}
-
-.actions-container h3 {
-    margin: 0 0 16px;
-}
-
-.action-buttons {
-    display: flex;
-    gap: 12px;
+.generate-btn {
+    background-color: var(--primary-color);
 }
 
 .action-btn {
     flex: 1;
-    border: none;
     padding: 12px;
     font-size: 15px;
-    font-weight: 600;
-    border-radius: 8px;
-    cursor: pointer;
-    color: #fff;
 }
 
 .pdf-btn {
@@ -260,7 +241,36 @@ textarea {
     background-color: #22c55e;
 }
 
-/* --- ANIMATIONS & HOVER EFFECTS --- */
+.add-btn {
+    border: 1px solid #d9dce1;
+    padding: 8px 14px;
+    border-radius: 6px;
+    margin-top: 16px;
+}
+
+/* --- PREVIEW & ACTIONS --- */
+#resume-preview {
+    min-height: 50vh;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.actions-container {
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #e6e8eb;
+}
+
+.actions-container h3 {
+    margin: 0 0 16px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+/* --- ANIMATIONS --- */
 @keyframes fadeInSlideUp {
     from {
         opacity: 0;
@@ -273,41 +283,21 @@ textarea {
     }
 }
 
-.ai-btn,
-.import-btn,
-.add-btn,
-.generate-btn,
-.action-btn {
-    transition: all .2s ease;
-}
-
-.ai-btn:hover,
-.import-btn:hover,
-.add-btn:hover,
-.generate-btn:hover,
-.action-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* --- MOBILE RESPONSIVE STYLES (THE BIG FIX) --- */
+/* --- MOBILE RESPONSIVE STYLES --- */
 @media (max-width: 900px) {
     .main-content {
         flex-direction: column;
-        /* Stack form and preview vertically */
         padding: 16px;
     }
 
     .preview-container {
         position: static;
-        /* Remove sticky positioning */
         margin-top: 24px;
         width: 100%;
     }
 
     .grid-container {
         grid-template-columns: 1fr;
-        /* Stack contact fields */
     }
 
     .header {
