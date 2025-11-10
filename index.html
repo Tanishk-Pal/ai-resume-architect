@@ -24,9 +24,7 @@
         </div>
         <div class="top-nav">
             <button type="button" class="nav-btn active">Resume Generator</button>
-            <button type="button" class="nav-btn">Content Rewriter</button>
         </div>
-        <a href="#" class="header-link">Your Personal Career Coach</a>
     </header>
 
     <main class="main-content">
@@ -47,18 +45,18 @@
 
             <div class="form-section">
                 <h3>Target Role</h3>
-                <input type="text" id="target-role-input" placeholder="e.g., Software Engineer">
+                <input type="text" id="target-role-input" class="save-data" placeholder="e.g., Software Engineer">
             </div>
 
             <div class="form-section">
                 <h3>Contact Information</h3>
                 <div class="grid-container">
-                    <input type="text" id="name-input" placeholder="Full Name">
-                    <input type="email" id="email-input" placeholder="Email">
-                    <input type="tel" id="phone-input" placeholder="Phone">
-                    <input type="text" id="address-input" placeholder="Address">
-                    <input type="url" id="linkedin-input" placeholder="LinkedIn URL">
-                    <input type="url" id="github-input" placeholder="GitHub URL">
+                    <input type="text" id="name-input" class="save-data" placeholder="Full Name">
+                    <input type="email" id="email-input" class="save-data" placeholder="Email">
+                    <input type="tel" id="phone-input" class="save-data" placeholder="Phone">
+                    <input type="text" id="address-input" class="save-data" placeholder="Address">
+                    <input type="url" id="linkedin-input" class="save-data" placeholder="LinkedIn URL">
+                    <input type="url" id="github-input" class="save-data" placeholder="GitHub URL">
                 </div>
                 <label for="profile-picture-input" class="file-upload-label">
                     <span>Upload Profile Picture</span>
@@ -72,7 +70,8 @@
                     <h3>Career Objective / Bio</h3>
                     <button type="button" id="generate-summary-btn" class="ai-btn">✨ Generate with AI</button>
                 </div>
-                <textarea id="summary-input" placeholder="A highly motivated and ambitious..."></textarea>
+                <textarea id="summary-input" class="save-data"
+                    placeholder="A highly motivated and ambitious..."></textarea>
             </div>
 
             <div class="form-section">
@@ -90,11 +89,10 @@
             <div class="form-section">
                 <h3>Technical Skills</h3>
                 <div class="skills-grid">
-                    <textarea id="programming-skills-input"
-                        placeholder="Programming Languages (e.g., Python, Java, C++)"></textarea>
-                    <textarea id="web-skills-input" placeholder="Web Technologies (e.g., HTML, CSS, React)"></textarea>
-                    <textarea id="soft-skills-input"
-                        placeholder="Soft Skills (e.g., Problem Solving, Teamwork)"></textarea>
+                    <textarea id="programming-skills-input" class="save-data"
+                        placeholder="Programming Languages..."></textarea>
+                    <textarea id="web-skills-input" class="save-data" placeholder="Web Technologies..."></textarea>
+                    <textarea id="soft-skills-input" class="save-data" placeholder="Soft Skills..."></textarea>
                 </div>
             </div>
 
