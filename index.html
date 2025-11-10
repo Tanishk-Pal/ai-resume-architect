@@ -9,12 +9,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
-        integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
-        integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- Libraries for PDF and JPEG Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <!-- ADD THESE LINES: Libraries for DOCX Generation and Saving Files -->
+    <script src="https://unpkg.com/html-docx-js-typescript@1.8.0/dist/html-docx.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 
 <body>
@@ -24,9 +26,15 @@
             <h1>AI Resume Architect</h1>
             <span class="developer-credit-top">A Tanishk Pal Project</span>
         </div>
+        <div class="top-nav">
+            <button type="button" class="nav-btn active">Resume Generator</button>
+            <button type="button" class="nav-btn">Content Rewriter</button>
+        </div>
+        <a href="#" class="header-link">Your Personal Career Coach</a>
     </header>
 
     <main class="main-content">
+        <!-- The Form Container -->
         <section class="form-container">
             <div class="form-header">
                 <h2>Enter Your Details</h2>
@@ -43,18 +51,18 @@
 
             <div class="form-section">
                 <h3>Target Role</h3>
-                <input type="text" id="target-role-input" class="save-data" placeholder="e.g., Software Engineer">
+                <input type="text" id="target-role-input" placeholder="e.g., Software Engineer">
             </div>
 
             <div class="form-section">
                 <h3>Contact Information</h3>
                 <div class="grid-container">
-                    <input type="text" id="name-input" class="save-data" placeholder="Full Name">
-                    <input type="email" id="email-input" class="save-data" placeholder="Email">
-                    <input type="tel" id="phone-input" class="save-data" placeholder="Phone">
-                    <input type="text" id="address-input" class="save-data" placeholder="Address">
-                    <input type="url" id="linkedin-input" class="save-data" placeholder="LinkedIn URL">
-                    <input type="url" id="github-input" class="save-data" placeholder="GitHub URL">
+                    <input type="text" id="name-input" placeholder="Full Name">
+                    <input type="email" id="email-input" placeholder="Email">
+                    <input type="tel" id="phone-input" placeholder="Phone">
+                    <input type="text" id="address-input" placeholder="Address">
+                    <input type="url" id="linkedin-input" placeholder="LinkedIn URL">
+                    <input type="url" id="github-input" placeholder="GitHub URL">
                 </div>
                 <label for="profile-picture-input" class="file-upload-label">
                     <span>Upload Profile Picture</span>
@@ -65,11 +73,10 @@
 
             <div class="form-section">
                 <div class="section-header">
-                    <h3>Career Objective</h3>
+                    <h3>Career Objective / Bio</h3>
                     <button type="button" id="generate-summary-btn" class="ai-btn">✨ Generate with AI</button>
                 </div>
-                <textarea id="summary-input" class="save-data"
-                    placeholder="A highly motivated and ambitious..."></textarea>
+                <textarea id="summary-input" placeholder="A highly motivated and ambitious..."></textarea>
             </div>
 
             <div class="form-section">
@@ -87,10 +94,11 @@
             <div class="form-section">
                 <h3>Technical Skills</h3>
                 <div class="skills-grid">
-                    <textarea id="programming-skills-input" class="save-data"
-                        placeholder="Programming Languages..."></textarea>
-                    <textarea id="web-skills-input" class="save-data" placeholder="Web Technologies..."></textarea>
-                    <textarea id="soft-skills-input" class="save-data" placeholder="Soft Skills..."></textarea>
+                    <textarea id="programming-skills-input"
+                        placeholder="Programming Languages (e.g., Python, Java, C++)"></textarea>
+                    <textarea id="web-skills-input" placeholder="Web Technologies (e.g., HTML, CSS, React)"></textarea>
+                    <textarea id="soft-skills-input"
+                        placeholder="Soft Skills (e.g., Problem Solving, Teamwork)"></textarea>
                 </div>
             </div>
 
@@ -105,6 +113,7 @@
             </div>
         </section>
 
+        <!-- Resume Preview and Actions Container -->
         <section id="preview-container" class="preview-container" style="display: none;">
             <div id="resume-preview"></div>
             <div class="actions-container">
@@ -112,11 +121,15 @@
                 <div class="action-buttons">
                     <button type="button" id="download-pdf-btn" class="action-btn pdf-btn">Download PDF</button>
                     <button type="button" id="download-jpeg-btn" class="action-btn jpeg-btn">Download JPEG</button>
+                    <!-- ADD THIS BUTTON: Word Download Button -->
+                    <button type="button" id="download-docx-btn" class="action-btn docx-btn">Download Word
+                        (.docx)</button>
                     <button type="button" id="share-btn" class="action-btn share-btn">Share</button>
                 </div>
             </div>
         </section>
     </main>
+
     <script src="script.js"></script>
 </body>
 
