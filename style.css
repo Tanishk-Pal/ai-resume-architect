@@ -330,19 +330,6 @@ button {
     color: #555;
 }
 
-.is-capturing {
-    position: static !important;
-    height: auto !important;
-    overflow: visible !important;
-}
-
-.is-capturing #resume-preview-content {
-    height: auto !important;
-    overflow: visible !important;
-    box-shadow: none !important;
-    border: 1px solid #ccc;
-}
-
 .achievements-list,
 .courses-list,
 .passions-list {
@@ -368,6 +355,7 @@ button {
     text-align: center;
 }
 
+/* --- 3. ACTION CARD & FOOTER STYLES --- */
 .actions-card {
     max-width: 800px;
     margin: 10px auto 40px auto;
@@ -409,7 +397,75 @@ button {
     background-color: #198754;
 }
 
-/* --- 3. MOBILE RESPONSIVENESS --- */
+.site-header,
+.site-footer {
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    padding: 20px;
+    color: #888;
+}
+
+.site-header {
+    background-color: var(--card-background);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+}
+
+.site-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.site-footer {
+    font-size: 0.9rem;
+    margin-top: 20px;
+}
+
+.site-footer p {
+    margin: 0;
+}
+
+/* --- 4. MOBILE RESPONSIVENESS & DOWNLOAD FIX --- */
+
+/* This hides the process from the user by rendering the wide resume off-screen */
+.is-capturing {
+    position: absolute !important;
+    left: -9999px !important;
+    top: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+}
+
+/* This forces the resume content to a fixed, paper-like width during capture */
+.is-capturing #resume-preview-content {
+    width: 800px !important;
+    height: auto !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: 1px solid #ccc;
+    padding: 40px !important;
+}
+
+.is-capturing .resume-body,
+.is-capturing .resume-header {
+    flex-direction: row !important;
+    text-align: left !important;
+    align-items: flex-start !important;
+}
+
+.is-capturing .resume-header {
+    justify-content: space-between !important;
+}
+
+.is-capturing .resume-contact-bar {
+    justify-content: flex-start !important;
+}
+
 @media (max-width: 768px) {
     .container {
         flex-direction: column;
@@ -417,7 +473,9 @@ button {
     }
 
     .form-column,
-    .actions-card {
+    .actions-card,
+    .site-header,
+    .site-footer {
         max-width: 100%;
     }
 
@@ -457,51 +515,8 @@ button {
         width: 100%;
     }
 
-    /* --- THIS IS THE FIX --- */
-    /* Lifts the button to the top layer to ensure it is clickable */
     .generate-btn {
         position: relative;
         z-index: 10;
     }
-}
-
-/* --- 3. HEADER AND FOOTER STYLES (CORRECTED FOR CENTERING) --- */
-
-.site-header,
-.site-footer {
-    /* This makes the container the same width as your form */
-    max-width: 800px;
-
-    /* This is the key: it centers the container itself */
-    margin-left: auto;
-    margin-right: auto;
-
-    /* This centers the text inside the container */
-    text-align: center;
-
-    padding: 20px;
-    color: #888;
-}
-
-.site-header {
-    background-color: var(--card-background);
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    margin-bottom: 20px;
-}
-
-.site-header h1 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--primary-color);
-}
-
-.site-footer {
-    font-size: 0.9rem;
-    margin-top: 20px;
-}
-
-.site-footer p {
-    margin: 0;
 }
