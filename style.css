@@ -1,4 +1,8 @@
-/* --- 1. FORM & LAYOUT STYLES --- */
+/* ===================================================================================
+   == AI RESUME ARCHITECT - FINAL & COMPLETE STYLESHEET (style.css) ==
+   =================================================================================== */
+
+/* --- 1. GLOBAL & FORM STYLES --- */
 :root {
     --primary-color: #7c3aed;
     --background-color: #f8f9fa;
@@ -61,7 +65,8 @@ input[type="text"],
 input[type="email"],
 input[type="tel"],
 input[type="url"],
-textarea {
+textarea,
+select {
     width: 100%;
     padding: 12px;
     border: 1px solid var(--border-color);
@@ -71,7 +76,8 @@ textarea {
 }
 
 input:focus,
-textarea:focus {
+textarea:focus,
+select:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
@@ -138,7 +144,8 @@ button {
 }
 
 .dynamic-entry input,
-.dynamic-entry textarea {
+.dynamic-entry textarea,
+.dynamic-entry select {
     margin-bottom: 10px;
 }
 
@@ -185,7 +192,7 @@ button {
 .resume-header .contact-info p {
     margin: 5px 0 0;
     font-size: 1.1rem;
-    color: #7c3aed;
+    color: var(--primary-color);
 }
 
 .resume-header .profile-pic {
@@ -260,18 +267,9 @@ button {
     margin: 5px 0;
 }
 
-.job-location {
-    color: #777;
-    font-size: 0.9rem;
-}
-
 .job ul {
     padding-left: 20px;
     margin-top: 10px;
-}
-
-.project-entry {
-    margin-bottom: 15px;
 }
 
 .project-entry .project-title {
@@ -280,13 +278,9 @@ button {
 }
 
 .project-entry .project-link {
-    color: #7c3aed;
+    color: var(--primary-color);
     text-decoration: none;
     word-break: break-all;
-}
-
-.project-entry .project-link:hover {
-    text-decoration: underline;
 }
 
 .education-entry {
@@ -355,7 +349,130 @@ button {
     text-align: center;
 }
 
-/* --- 3. ACTION CARD & FOOTER STYLES --- */
+/* --- 3. SCORE CHECKER & COMPRESSOR PAGE STYLES --- */
+.site-header nav {
+    margin-top: 10px;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.site-header nav a {
+    color: #555;
+    text-decoration: none;
+    font-weight: 500;
+    padding-bottom: 5px;
+    border-bottom: 2px solid transparent;
+}
+
+.site-header nav a.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.score-checker-card {
+    width: 100%;
+    max-width: 800px;
+    background-color: var(--card-background);
+    border-radius: 8px;
+    padding: 30px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.uploader-area {
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    padding: 40px 20px;
+    margin: 20px 0;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+    color: #888;
+}
+
+.uploader-area:hover {
+    background-color: #f8f9fa;
+    border-color: var(--primary-color);
+}
+
+.uploader-area i {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+}
+
+.uploader-area p {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #555;
+    margin: 10px 0;
+}
+
+#file-name {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.9rem;
+}
+
+#check-score-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.score-display {
+    margin: 20px 0;
+}
+
+.score-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    border: 10px solid var(--primary-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 20px auto;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.score-circle span {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+#feedback-list {
+    text-align: left;
+    list-style-type: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+#feedback-list li {
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+}
+
+#feedback-list li.good {
+    background-color: #e6f9f1;
+    color: #198754;
+}
+
+#feedback-list li.bad {
+    background-color: #fdeded;
+    color: #dc3545;
+}
+
+#feedback-list li i {
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+/* --- 4. GLOBAL ELEMENTS: HEADER, FOOTER, ACTIONS, LOADER --- */
 .actions-card {
     max-width: 800px;
     margin: 10px auto 40px auto;
@@ -399,7 +516,7 @@ button {
 
 .site-header,
 .site-footer {
-    max-width: 800px;
+    max-width: 100%;
     margin-left: auto;
     margin-right: auto;
     text-align: center;
@@ -407,9 +524,9 @@ button {
     color: #888;
 }
 
+/* Changed max-width to 100% */
 .site-header {
     background-color: var(--card-background);
-    border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     margin-bottom: 20px;
 }
@@ -430,98 +547,7 @@ button {
     margin: 0;
 }
 
-/* --- 4. MOBILE RESPONSIVENESS & DOWNLOAD FIX --- */
-
-/* This hides the process from the user by rendering the wide resume off-screen */
-.is-capturing {
-    position: absolute !important;
-    left: -9999px !important;
-    top: 0 !important;
-    height: auto !important;
-    overflow: visible !important;
-}
-
-/* This forces the resume content to a fixed, paper-like width during capture */
-.is-capturing #resume-preview-content {
-    width: 800px !important;
-    height: auto !important;
-    overflow: visible !important;
-    box-shadow: none !important;
-    border: 1px solid #ccc;
-    padding: 40px !important;
-}
-
-.is-capturing .resume-body,
-.is-capturing .resume-header {
-    flex-direction: row !important;
-    text-align: left !important;
-    align-items: flex-start !important;
-}
-
-.is-capturing .resume-header {
-    justify-content: space-between !important;
-}
-
-.is-capturing .resume-contact-bar {
-    justify-content: flex-start !important;
-}
-
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-        padding: 10px;
-    }
-
-    .form-column,
-    .actions-card,
-    .site-header,
-    .site-footer {
-        max-width: 100%;
-    }
-
-    .preview-column {
-        position: static;
-        height: auto;
-        margin-top: 20px;
-    }
-
-    #resume-preview-content {
-        padding: 20px;
-    }
-
-    .resume-header {
-        flex-direction: column-reverse;
-        align-items: center;
-        text-align: center;
-        gap: 15px;
-    }
-
-    .resume-body {
-        flex-direction: column;
-        gap: 0;
-    }
-
-    .resume-contact-bar {
-        justify-content: center;
-        gap: 15px;
-    }
-
-    .action-buttons {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .action-btn {
-        width: 100%;
-    }
-
-    .generate-btn {
-        position: relative;
-        z-index: 10;
-    }
-}
-
-/* --- NEW: LOADER STYLES --- */
+/* --- THIS WAS THE MISSING PIECE --- */
 .loader-overlay {
     position: fixed;
     top: 0;
@@ -570,26 +596,96 @@ button {
     color: #333;
 }
 
-/* --- 4. MOBILE RESPONSIVENESS & DOWNLOAD FIX --- */
-/* (All other styles are the same, this is the main change) */
+/* --- END OF MISSING PIECE --- */
 
-/* The mobile "Generate Resume" button is hidden on desktop */
-#generate-resume-btn-mobile {
-    display: none;
+
+/* --- 5. DOWNLOAD & RESPONSIVENESS FIXES --- */
+.is-capturing {
+    position: absolute !important;
+    left: -9999px !important;
+    top: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
 }
 
-@media (max-width: 768px) {
+.is-capturing #resume-preview-content {
+    width: 800px !important;
+    height: auto !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: 1px solid #ccc;
+    padding: 40px !important;
+}
 
-    /* ... (all your existing mobile styles) ... */
-    .generate-btn {
-        position: relative;
-        z-index: 10;
+.is-capturing .resume-body,
+.is-capturing .resume-header {
+    flex-direction: row !important;
+    text-align: left !important;
+    align-items: flex-start !important;
+}
+
+.is-capturing .resume-header {
+    justify-content: space-between !important;
+}
+
+.is-capturing .resume-contact-bar {
+    justify-content: flex-start !important;
+}
+
+/* This is the master @media query for all mobile fixes. */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        padding: 10px;
     }
 
-    /* NEW: Show the generate button ONLY on mobile */
-    #generate-resume-btn-mobile {
+    .form-column,
+    .actions-card,
+    .site-header,
+    .site-footer,
+    .score-checker-card {
+        max-width: 100%;
+    }
+
+    .preview-column {
+        position: static;
+        height: auto;
+        margin-top: 20px;
+    }
+
+    #resume-preview-content {
+        padding: 20px;
+    }
+
+    .resume-header {
+        flex-direction: column-reverse;
+        align-items: center;
+        text-align: center;
+        gap: 15px;
+    }
+
+    .resume-body {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .resume-contact-bar {
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .action-btn {
+        width: 100%;
+    }
+
+    .generate-btn {
         display: block;
-        /* Show the button */
-        margin-top: 10px;
+        position: relative;
+        z-index: 999;
     }
 }

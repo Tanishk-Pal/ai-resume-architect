@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Score Checker - AI Resume Architect</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- CRITICAL FIX: Added Font Awesome for the icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <header class="site-header">
+        <h1>AI Resume Architect</h1>
+        <p>Developed by Tanishk Pal</p>
+        <nav>
+            <a href="index.html">Resume Builder</a>
+            <a href="score.html" class="active">Score Checker</a>
+            <a href="compress.html">PDF File Compressor</a>
+        </nav>
+    </header>
+
+    <main class="container" style="flex-direction: column; align-items: center;">
+        <div class="score-checker-card">
+            <h2>Check Your Resume Score</h2>
+            <p>Upload your resume in PDF format to get an instant analysis and a score out of 100.</p>
+
+            <!-- This input will be hidden, but it's what the button clicks -->
+            <input type="file" id="resume-upload" accept=".pdf" style="display: none;">
+
+            <div class="uploader-area" id="uploader-area">
+                <i class="fas fa-upload"></i>
+                <p>Click to Upload a PDF</p>
+                <span id="file-name">Max file size: 5MB</span>
+            </div>
+
+            <button id="check-score-btn" class="generate-btn" disabled>Check Score</button>
+        </div>
+
+        <div id="results-area" class="score-checker-card" style="display: none;">
+            <h2>Your Results</h2>
+            <div class="score-display">
+                <div class="score-circle">
+                    <span id="score-value">0</span>/100
+                </div>
+                <p id="score-feedback-text">Here's the analysis of your resume.</p>
+            </div>
+            <div id="feedback-list">
+                <!-- Feedback items will be added here by JavaScript -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>Developed by Tanishk Pal</p>
+    </footer>
+
+    <!-- Link to the JavaScript file -->
+    <script src="score.js"></script>
+</body>
+
+</html>

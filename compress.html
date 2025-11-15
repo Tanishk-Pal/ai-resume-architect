@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Compressor - AI Resume Architect</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <header class="site-header">
+        <h1>AI Resume Architect</h1>
+        <p>Developed by Tanishk Pal</p>
+        <nav>
+            <a href="index.html">Resume Builder</a>
+            <a href="score.html">Score Checker</a>
+            <a href="compress.html" class="active">PDF Compressor</a>
+        </nav>
+    </header>
+
+    <main class="container" style="flex-direction: column; align-items: center;">
+        <div class="score-checker-card">
+            <h2>Compress Your PDF</h2>
+            <p>Upload a PDF file to reduce its size, perfect for email attachments and online applications.</p>
+
+            <input type="file" id="pdf-upload" accept=".pdf" style="display: none;">
+
+            <div class="uploader-area" id="uploader-area">
+                <i class="fas fa-file-pdf"></i>
+                <p>Click to Upload a PDF</p>
+                <span id="file-name">Max file size: 10MB</span>
+            </div>
+
+            <button id="compress-btn" class="generate-btn" disabled>Compress File</button>
+        </div>
+
+        <div id="results-area" class="score-checker-card" style="display: none;">
+            <h2>Compression Complete!</h2>
+            <div id="download-area">
+                <!-- Download button will be added here by JavaScript -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>Developed by Tanishk Pal</p>
+    </footer>
+
+    <div id="loader" class="loader-overlay">
+        <div class="loader-spinner"></div>
+        <p>Compressing...</p>
+    </div>
+
+    <script src="compress.js"></script>
+</body>
+
+</html>

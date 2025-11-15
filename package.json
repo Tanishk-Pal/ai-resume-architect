@@ -1,5 +1,33 @@
 {
   "dependencies": {
-    "express": "^5.1.0"
-  }
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "execa": "^9.6.0",
+    "express": "^5.1.0",
+    "ghostscript-node": "^1.5.0",
+    "multer": "^2.0.2",
+    "node-cmd": "^5.0.0",
+    "pdf-lib": "^1.17.1",
+    "pdf-parse": "^2.4.5",
+    "pdf2json": "^4.0.0"
+  },
+  "name": "ai-resume-architect",
+  "version": "1.0.0",
+  "main": "score.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tanishk-Pal/ai-resume-architect.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tanishk-Pal/ai-resume-architect/issues"
+  },
+  "homepage": "https://github.com/Tanishk-Pal/ai-resume-architect#readme",
+  "description": ""
 }
