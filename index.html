@@ -13,12 +13,9 @@
 </head>
 
 <body>
-    <!-- NEW: ADD THIS HEADER SECTION -->
     <header class="site-header">
-        <h1><u>AI Resume Architect</h1></u>
-        <p>
-            Developed by <u>Tanishk Pal </u>
-        </p>
+        <h1>AI Resume Architect</h1>
+        <p>Developed by Tanishk Pal</p>
     </header>
 
     <main class="container">
@@ -49,6 +46,10 @@
                     <div class="form-group"><label for="address">Location</label><input type="text" id="address"></div>
                     <div class="form-group" style="grid-column: 1 / -1;"><label for="linkedin-url">LinkedIn
                             URL</label><input type="url" id="linkedin-url"></div>
+                    <div class="form-group">
+                        <label for="accent-color">Choose Accent Color</label>
+                        <input type="color" id="accent-color" value="#7c3aed" style="width: 100%; height: 40px;">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="profile-picture">Upload Profile Picture</label>
@@ -60,14 +61,10 @@
                 <h2>Master Your Summary</h2>
                 <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">(Optional) Add these details to make
                     your summary stand out.</p>
-                <div class="form-group">
-                    <label for="achievement">Proudest Technical Achievement</label>
-                    <input type="text" id="achievement" placeholder="e.g., Optimized an algorithm to run 30% faster">
-                </div>
-                <div class="form-group">
-                    <label for="passion">Career Ambition / Passion</label>
-                    <input type="text" id="passion" placeholder="e.g., building scalable cloud-native architectures">
-                </div>
+                <div class="form-group"><label for="achievement">Proudest Technical Achievement</label><input
+                        type="text" id="achievement" placeholder="e.g., Optimized an algorithm to run 30% faster"></div>
+                <div class="form-group"><label for="passion">Career Ambition / Passion</label><input type="text"
+                        id="passion" placeholder="e.g., building scalable cloud-native architectures"></div>
             </div>
 
             <div class="card">
@@ -76,7 +73,6 @@
                 <button id="add-experience-btn" class="add-btn">+ Add Experience</button>
             </div>
 
-            <!-- NEW SECTIONS -->
             <div class="card">
                 <h2>Achievements</h2>
                 <div id="achievements-list"></div>
@@ -101,10 +97,8 @@
 
             <div class="card">
                 <h2>Skills</h2>
-                <div class="form-group">
-                    <textarea id="skills" rows="3"
-                        placeholder="Comma-separated: Java, Python, AWS, Cloud Computing"></textarea>
-                </div>
+                <div class="form-group"><textarea id="skills" rows="3"
+                        placeholder="Comma-separated: Java, Python, AWS, Cloud Computing"></textarea></div>
             </div>
 
             <div class="card">
@@ -113,6 +107,7 @@
                 <button id="add-project-btn" class="add-btn">+ Add Project</button>
             </div>
 
+            <!-- This one button now handles both desktop and mobile -->
             <button id="generate-resume-btn" class="generate-btn">Generate Resume</button>
         </div>
 
@@ -123,6 +118,7 @@
             </div>
         </div>
     </main>
+
     <div class="actions-card">
         <h3>Actions</h3>
         <div class="action-buttons">
@@ -132,11 +128,14 @@
         </div>
     </div>
 
-    <!-- NEW: ADD THIS FOOTER SECTION -->
     <footer class="site-footer">
         <p>Developed by Tanishk Pal</p>
     </footer>
 
+    <div id="loader" class="loader-overlay">
+        <div class="loader-spinner"></div>
+        <p>Processing...</p>
+    </div>
 
     <script src="script.js"></script>
 </body>

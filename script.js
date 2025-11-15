@@ -2,6 +2,10 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
+    // --- DOM Elements ---
+    const loader = document.getElementById('loader');
+    const generateBtn = document.getElementById('generate-resume-btn'); // Only one button now
+
     // --- Skill Categorization "Knowledge Base" ---
     const SKILL_CATEGORIES = {
         'Programming Languages': ['python', 'java', 'c++', 'c', 'javascript', 'typescript'],
@@ -11,55 +15,49 @@ document.addEventListener('DOMContentLoaded', () => {
         'Tools & Version Control': ['git', 'github', 'docker', 'aws']
     };
 
-    // --- ACTION BUTTONS (with corrected PDF logic) ---
+    // --- "Bulletproof" Download Function ---
     async function captureResume(format) {
-        const resumeContainer = document.querySelector('.preview-column');
-        const resumeContent = document.getElementById('resume-preview-content');
-        const fullName = document.getElementById('full-name').value || 'resume';
-
-        resumeContainer.classList.add('is-capturing');
-
-        const canvas = await html2canvas(resumeContent, {
-            scale: 2, useCORS: true, logging: false, width: resumeContent.scrollWidth, height: resumeContent.scrollHeight
-        });
-
-        resumeContainer.classList.remove('is-capturing');
-
-        if (format === 'jpeg') {
-            const link = document.createElement('a');
-            link.href = canvas.toDataURL('image/jpeg', 0.9);
-            link.download = `${fullName.replace(/\s/g, '_')}.jpeg`;
-            link.click();
-        } else if (format === 'pdf') {
-            const imgData = canvas.toDataURL('image/png');
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-
-            const pageWidth = pdf.internal.pageSize.getWidth();
-            const pageHeight = pdf.internal.pageSize.getHeight();
-            const canvasWidth = canvas.width;
-            const canvasHeight = canvas.height;
-            const canvasRatio = canvasHeight / canvasWidth;
-
-            let finalWidth = pageWidth;
-            let finalHeight = pageWidth * canvasRatio;
-
-            if (finalHeight > pageHeight) {
-                finalHeight = pageHeight;
-                finalWidth = pageHeight / canvasRatio;
+        loader.classList.add('show');
+        await new Promise(resolve => setTimeout(resolve, 50));
+        try {
+            const resumeContainer = document.querySelector('.preview-column');
+            const resumeContent = document.getElementById('resume-preview-content');
+            const fullName = document.getElementById('full-name').value || 'resume';
+            resumeContainer.classList.add('is-capturing');
+            await new Promise(resolve => setTimeout(resolve, 50));
+            const canvas = await html2canvas(resumeContent, { scale: 2, useCORS: true, logging: false, width: resumeContent.scrollWidth, height: resumeContent.scrollHeight });
+            resumeContainer.classList.remove('is-capturing');
+            if (format === 'jpeg') {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                link.download = `${fullName.replace(/\s/g, '_')}.jpeg`;
+                link.click();
+            } else if (format === 'pdf') {
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+                const canvasRatio = canvas.height / canvas.width;
+                let finalWidth = pageWidth;
+                let finalHeight = pageWidth * canvasRatio;
+                if (finalHeight > pageHeight) { finalHeight = pageHeight; finalWidth = pageHeight / canvasRatio; }
+                const xOffset = (pageWidth - finalWidth) / 2;
+                pdf.addImage(imgData, 'PNG', xOffset, 0, finalWidth, finalHeight);
+                pdf.save(`${fullName.replace(/\s/g, '_')}.pdf`);
             }
-
-            const xOffset = (pageWidth - finalWidth) / 2;
-            pdf.addImage(imgData, 'PNG', xOffset, 0, finalWidth, finalHeight);
-            pdf.save(`${fullName.replace(/\s/g, '_')}.pdf`);
+        } catch (error) {
+            console.error("Download failed:", error);
+            alert("Sorry, the download failed. Please try again.");
+        } finally {
+            loader.classList.remove('show');
         }
     }
-
     document.getElementById('download-pdf-btn').addEventListener('click', () => captureResume('pdf'));
     document.getElementById('download-jpeg-btn').addEventListener('click', () => captureResume('jpeg'));
     document.getElementById('share-btn').addEventListener('click', () => { alert("Share functionality coming soon!"); });
 
-    // --- (All other button listeners and helper functions are here and correct) ---
+    // --- GitHub Project Import ---
     document.getElementById('import-github-btn').addEventListener('click', async () => {
         const username = document.getElementById('github-username').value;
         if (!username) return alert('Please enter a GitHub username.');
@@ -73,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) { alert(`Could not fetch projects: ${error.message}`); }
     });
 
+    // --- Dynamic Form Field Creation ---
     document.getElementById('add-experience-btn').addEventListener('click', () => { document.getElementById('experience-list').appendChild(createExperienceEntry()); });
     document.getElementById('add-achievement-btn').addEventListener('click', () => { document.getElementById('achievements-list').appendChild(createSingleInputEntry("e.g., Winner of Smart India Hackathon 2024", "achievement-text")); });
     document.getElementById('add-course-btn').addEventListener('click', () => { document.getElementById('courses-list').appendChild(createSingleInputEntry("e.g., AWS Certified Cloud Practitioner", "course-text")); });
@@ -80,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('add-education-btn').addEventListener('click', () => { document.getElementById('education-list').appendChild(createEducationEntry()); });
     document.getElementById('add-project-btn').addEventListener('click', () => { document.getElementById('projects-list').appendChild(createProjectEntry()); });
 
+    // --- HELPER FUNCTIONS (RESTORED) ---
     function createExperienceEntry(title = '', company = '', dates = '', desc = '') {
         const entry = document.createElement('div');
         entry.className = 'dynamic-entry';
@@ -87,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
         entry.querySelector('.remove-btn').addEventListener('click', () => entry.remove());
         return entry;
     }
-
     function createEducationEntry(institution = '', degree = '', date = '') {
         const entry = document.createElement('div');
         entry.className = 'dynamic-entry';
@@ -95,7 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
         entry.querySelector('.remove-btn').addEventListener('click', () => entry.remove());
         return entry;
     }
-
     function createProjectEntry(name = '', desc = '', link = '') {
         const entry = document.createElement('div');
         entry.className = 'dynamic-entry';
@@ -103,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
         entry.querySelector('.remove-btn').addEventListener('click', () => entry.remove());
         return entry;
     }
-
     function createSingleInputEntry(placeholder, className) {
         const entry = document.createElement('div');
         entry.className = 'dynamic-entry';
@@ -111,7 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
         entry.querySelector('.remove-btn').addEventListener('click', () => entry.remove());
         return entry;
     }
-
     function generateAISummary(name, role, skills, projects, achievement, passion) {
         if (!name || !role) return '';
         const topSkills = skills.slice(0, 3).join(', ');
@@ -126,7 +122,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return summary;
     }
 
-    document.getElementById('generate-resume-btn').addEventListener('click', () => {
+    // --- THE "SMART" RESPONSIVE LOGIC ---
+    function isMobile() {
+        return window.innerWidth <= 768;
+    }
+
+    function generateResume() {
         const preview = document.getElementById('resume-preview-content');
         const data = {
             fullName: document.getElementById('full-name').value,
@@ -151,9 +152,28 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.onload = e => { data.profilePicUrl = e.target.result; preview.innerHTML = buildResumeHTML(data); };
         if (profilePicFile) { reader.readAsDataURL(profilePicFile); }
         else { data.profilePicUrl = 'https://via.placeholder.com/120'; preview.innerHTML = buildResumeHTML(data); }
+    }
+
+    function debounce(func, delay = 400) {
+        let timeout;
+        return (...args) => { clearTimeout(timeout); timeout = setTimeout(() => { func.apply(this, args); }, delay); };
+    }
+
+    const debouncedGenerateResume = debounce(generateResume);
+
+    // Live update on desktop, but NOT on mobile
+    document.querySelector('.form-column').addEventListener('input', () => {
+        if (!isMobile()) { debouncedGenerateResume(); }
     });
 
-    // --- THE FINAL, FULLY UPGRADED buildResumeHTML FUNCTION ---
+    // The single generate button now handles both desktop and mobile clicks
+    generateBtn.addEventListener('click', generateResume);
+
+    document.getElementById('accent-color').addEventListener('input', (e) => {
+        document.documentElement.style.setProperty('--primary-color', e.target.value);
+        if (!isMobile()) { debouncedGenerateResume(); }
+    });
+
     function buildResumeHTML(data) {
         const collegeEntries = (data.education || []).filter(edu => edu.type === 'college');
         const schoolEntries = (data.education || []).filter(edu => edu.type === 'school');
@@ -179,7 +199,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const coursesHTML = (data.courses?.length > 0) ? `<div class="resume-section"><h2>COURSES & CERTIFICATIONS</h2><ul class="courses-list">${data.courses.map(course => `<li><i class="fas fa-certificate"></i>${course}</li>`).join('')}</ul></div>` : '';
         const passionsHTML = (data.passions?.length > 0) ? `<div class="resume-section"><h2>PASSIONS</h2><ul class="passions-list">${data.passions.map(passion => `<li><i class="fas fa-heart"></i>${passion}</li>`).join('')}</ul></div>` : '';
 
-        // --- EDITED: The Final Assembly with Education on the Left ---
         return `
             <div class="resume-header">
                 <div class="contact-info"><h1>${(data.fullName || 'YOUR NAME').toUpperCase()}</h1><p>${data.targetRole || 'Target Role'}</p></div>
@@ -203,5 +222,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         `;
+    }
+
+    // Initial load check
+    if (!isMobile()) {
+        debouncedGenerateResume(); // Start with an initial generation on desktop
     }
 });
