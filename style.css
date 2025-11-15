@@ -289,7 +289,6 @@ button {
     text-decoration: underline;
 }
 
-/* EDITED: New Education Formatting */
 .education-entry {
     margin-bottom: 15px;
 }
@@ -314,7 +313,6 @@ button {
     font-style: italic;
 }
 
-/* EDITED: New Skills Formatting */
 .skill-category-block {
     margin-bottom: 15px;
 }
@@ -332,7 +330,6 @@ button {
     color: #555;
 }
 
-/* NEW & CRITICAL: Styles for full-page capture */
 .is-capturing {
     position: static !important;
     height: auto !important;
@@ -371,7 +368,6 @@ button {
     text-align: center;
 }
 
-/* Action Card Styles */
 .actions-card {
     max-width: 800px;
     margin: 10px auto 40px auto;
@@ -413,15 +409,85 @@ button {
     background-color: #198754;
 }
 
-/* --- 3. NEW: HEADER AND FOOTER STYLES --- */
+/* --- 3. MOBILE RESPONSIVENESS --- */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    .form-column,
+    .actions-card {
+        max-width: 100%;
+    }
+
+    .preview-column {
+        position: static;
+        height: auto;
+        margin-top: 20px;
+    }
+
+    #resume-preview-content {
+        padding: 20px;
+    }
+
+    .resume-header {
+        flex-direction: column-reverse;
+        align-items: center;
+        text-align: center;
+        gap: 15px;
+    }
+
+    .resume-body {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .resume-contact-bar {
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .action-btn {
+        width: 100%;
+    }
+
+    /* --- THIS IS THE FIX --- */
+    /* Lifts the button to the top layer to ensure it is clickable */
+    .generate-btn {
+        position: relative;
+        z-index: 10;
+    }
+}
+
+/* --- 3. HEADER AND FOOTER STYLES (CORRECTED FOR CENTERING) --- */
+
+.site-header,
+.site-footer {
+    /* This makes the container the same width as your form */
+    max-width: 800px;
+
+    /* This is the key: it centers the container itself */
+    margin-left: auto;
+    margin-right: auto;
+
+    /* This centers the text inside the container */
+    text-align: center;
+
+    padding: 20px;
+    color: #888;
+}
 
 .site-header {
     background-color: var(--card-background);
-    text-align: center;
-    padding: 15px 0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     margin-bottom: 20px;
-    border-bottom: 1px solid var(--border-color);
 }
 
 .site-header h1 {
@@ -432,76 +498,10 @@ button {
 }
 
 .site-footer {
-    text-align: center;
-    padding: 20px 0;
-    margin-top: 20px;
-    color: #888;
     font-size: 0.9rem;
+    margin-top: 20px;
 }
 
 .site-footer p {
     margin: 0;
-}
-
-/* --- 3. NEW: MOBILE RESPONSIVENESS --- */
-
-/* This applies to all screens smaller than 768px (tablets and phones) */
-@media (max-width: 768px) {
-
-    /* Stack the main columns vertically */
-    .container {
-        flex-direction: column;
-        padding: 10px;
-        /* Reduce padding on smaller screens */
-    }
-
-    /* Allow the form and preview to take the full width */
-    .form-column,
-    .actions-card {
-        max-width: 100%;
-    }
-
-    /* Un-stick the preview pane and let it flow naturally */
-    .preview-column {
-        position: static;
-        height: auto;
-        margin-top: 20px;
-    }
-
-    /* Make the resume preview look better on a narrow screen */
-    #resume-preview-content {
-        padding: 20px;
-    }
-
-    /* Stack the resume header content */
-    .resume-header {
-        flex-direction: column-reverse;
-        /* Puts name below image */
-        align-items: center;
-        text-align: center;
-        gap: 15px;
-    }
-
-    /* Stack the main resume body columns */
-    .resume-body {
-        flex-direction: column;
-        gap: 0;
-        /* Remove side-by-side gap */
-    }
-
-    /* On mobile, the contact bar items look better centered */
-    .resume-contact-bar {
-        justify-content: center;
-        gap: 15px;
-    }
-
-    /* Make the download buttons stack nicely */
-    .action-buttons {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .action-btn {
-        width: 100%;
-    }
 }
