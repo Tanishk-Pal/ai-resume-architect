@@ -1,128 +1,207 @@
-document.addEventListener('DOMContentLoaded', function () {
+// Replace your entire script.js file with this code.
 
-    // --- HTML templates for dynamic lists (Unchanged) ---
-    const experienceEntryHTML = `<input type="text" placeholder="Job Title" class="exp-title"><input type="text" placeholder="Company & Dates" class="exp-company"><textarea placeholder="• Description point 1..." class="exp-desc"></textarea><button type="button" class="remove-btn">×</button>`;
-    const educationEntryHTML = `<input type="text" placeholder="School/University" class="edu-school"><input type="text" placeholder="Degree" class="edu-degree"><input type="text" placeholder="Field of Study" class="edu-field"><input type="text" placeholder="Year" class="edu-year"><button type="button" class="remove-btn">×</button>`;
-    const projectEntryHTML = `<input type="text" placeholder="Project Title" class="proj-title"><textarea placeholder="• A single line description of the project." class="proj-desc"></textarea><button type="button" class="remove-btn">×</button>`;
+document.addEventListener('DOMContentLoaded', () => {
 
-    // --- All setup functions remain the same (Unchanged) ---
-    function setupDynamicList(addButtonId, listContainerId, entryHTML) { const addButton = document.getElementById(addButtonId); const listContainer = document.getElementById(listContainerId); if (!addButton || !listContainer) return; addButton.addEventListener('click', () => { const newEntry = document.createElement('div'); newEntry.className = 'dynamic-entry'; newEntry.innerHTML = entryHTML; listContainer.appendChild(newEntry); }); listContainer.addEventListener('click', (event) => { if (event.target && event.target.classList.contains('remove-btn')) { event.target.closest('.dynamic-entry').remove(); } }); }
-    setupDynamicList('add-experience-btn', 'experience-list', experienceEntryHTML);
-    setupDynamicList('add-education-btn', 'education-list', educationEntryHTML);
-    setupDynamicList('add-project-btn', 'projects-list', projectEntryHTML);
-    function generateAISummary(profession) { const p = profession.toLowerCase(); if (p.includes('software engineer')) return "A highly motivated and ambitious B.Tech Computer Science Engineer eager to leverage a strong foundational understanding and rapid learning capabilities in a challenging software development role. Committed to applying theoretical knowledge to practical scenarios, I aim to contribute proactively to a dynamic team environment and achieve organizational objectives. Seeking an opportunity to develop new competencies and drive impactful solutions."; return `Highly motivated professional with a background in ${profession}.`; }
-    document.getElementById('generate-summary-btn').addEventListener('click', () => { const profession = document.getElementById('target-role-input').value; if (!profession) return alert('Please enter your "Target Role" first!'); document.getElementById('summary-input').value = generateAISummary(profession); });
-    document.getElementById('import-github-btn').addEventListener('click', async () => { const username = document.getElementById('github-username-import').value; if (!username) return alert('Please enter a GitHub username.'); try { const response = await fetch(`https://api.github.com/users/${username}/repos?sort=stars&per_page=5`); if (!response.ok) throw new Error('User not found.'); const repos = await response.json(); const projectsList = document.getElementById('projects-list'); projectsList.innerHTML = ''; repos.forEach(repo => { const newEntry = document.createElement('div'); newEntry.className = 'dynamic-entry'; newEntry.innerHTML = `<input type="text" class="proj-title" value="${repo.name}"><textarea class="proj-desc">• ${repo.description || ''}</textarea><button type="button" class="remove-btn">×</button>`; projectsList.appendChild(newEntry); }); } catch (error) { alert('Could not fetch projects. Please check the username.'); } });
-    document.getElementById('profile-picture-input').addEventListener('change', (event) => { const fileNameDisplay = document.getElementById('file-name-display'); fileNameDisplay.textContent = event.target.files[0] ? event.target.files[0].name : ''; });
-    function loadFormData() { const savedDataJSON = localStorage.getItem('resumeFormData'); if (!savedDataJSON) return; const data = JSON.parse(savedDataJSON); document.getElementById('name-input').value = data.name || ''; document.getElementById('target-role-input').value = data.role || ''; document.getElementById('email-input').value = data.email || ''; document.getElementById('phone-input').value = data.phone || ''; document.getElementById('address-input').value = data.address || ''; document.getElementById('linkedin-input').value = data.linkedin || ''; document.getElementById('github-input').value = data.github || ''; document.getElementById('summary-input').value = data.summary || ''; document.getElementById('programming-skills-input').value = data.programmingSkills || ''; document.getElementById('web-skills-input').value = data.webSkills || ''; document.getElementById('soft-skills-input').value = data.softSkills || ''; const populateList = (listId, items, htmlTemplate, itemPopulationCallback) => { const container = document.getElementById(listId); container.innerHTML = ''; if (items && Array.isArray(items)) { items.forEach(item => { const entry = document.createElement('div'); entry.className = 'dynamic-entry'; entry.innerHTML = htmlTemplate; itemPopulationCallback(entry, item); container.appendChild(entry); }); } }; populateList('experience-list', data.experience, experienceEntryHTML, (entry, item) => { entry.querySelector('.exp-title').value = item.title || ''; entry.querySelector('.exp-company').value = item.company || ''; entry.querySelector('.exp-desc').value = item.desc || ''; }); populateList('education-list', data.education, educationEntryHTML, (entry, item) => { entry.querySelector('.edu-school').value = item.school || ''; entry.querySelector('.edu-degree').value = item.degree || ''; entry.querySelector('.edu-field').value = item.field || ''; entry.querySelector('.edu-year').value = item.year || ''; }); populateList('projects-list', data.projects, projectEntryHTML, (entry, item) => { entry.querySelector('.proj-title').value = item.title || ''; entry.querySelector('.proj-desc').value = item.desc || ''; }); }
+    // --- Skill Categorization "Knowledge Base" ---
+    const SKILL_CATEGORIES = {
+        'Programming Languages': ['python', 'java', 'c++', 'c', 'javascript', 'typescript'],
+        'Web Frameworks & Libraries': ['react', 'node.js', 'express.js', 'django', 'flask', 'html', 'css'],
+        'Databases': ['sql', 'sqlite', 'mysql', 'postgresql', 'mongodb'],
+        'Concepts & Methodologies': ['full-stack development', 'object-oriented programming (oop)', 'restful apis', 'ai/ml fundamentals', 'cybersecurity basics', 'data handling'],
+        'Tools & Version Control': ['git', 'github', 'docker', 'aws']
+    };
 
-    // --- Generate Resume & Data Saving Logic (Unchanged) ---
-    document.getElementById('generate-resume-btn').addEventListener('click', () => { const data = { name: document.getElementById('name-input').value, role: document.getElementById('target-role-input').value, email: document.getElementById('email-input').value, phone: document.getElementById('phone-input').value, address: document.getElementById('address-input').value, linkedin: document.getElementById('linkedin-input').value, github: document.getElementById('github-input').value, summary: document.getElementById('summary-input').value, programmingSkills: document.getElementById('programming-skills-input').value, webSkills: document.getElementById('web-skills-input').value, softSkills: document.getElementById('soft-skills-input').value, experience: Array.from(document.querySelectorAll('#experience-list .dynamic-entry')).map(e => ({ title: e.querySelector('.exp-title').value, company: e.querySelector('.exp-company').value, desc: e.querySelector('.exp-desc').value })), education: Array.from(document.querySelectorAll('#education-list .dynamic-entry')).map(e => ({ school: e.querySelector('.edu-school').value, degree: e.querySelector('.edu-degree').value, field: e.querySelector('.edu-field').value, year: e.querySelector('.edu-year').value })), projects: Array.from(document.querySelectorAll('#projects-list .dynamic-entry')).map(e => ({ title: e.querySelector('.proj-title').value, desc: e.querySelector('.proj-desc').value })) }; localStorage.setItem('resumeFormData', JSON.stringify(data)); if (data.name && data.email) { saveUserData(data); } const picFile = document.getElementById('profile-picture-input').files[0]; const reader = new FileReader(); reader.onload = e => { data.profilePic = e.target.result; generatePreview(data); }; if (picFile) reader.readAsDataURL(picFile); else generatePreview(data); });
-    async function saveUserData(data) { try { const backendUrl = 'https://ai-resume-architect-un01.onrender.com/api/save-user'; const response = await fetch(backendUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: data.name, email: data.email, phone: data.phone, address: data.address }), }); if (response.ok) { console.log('User data saved.'); } else { console.error('Failed to save user data.'); } } catch (error) { console.error('Error sending data to server:', error); } }
+    // --- ACTION BUTTONS (with corrected PDF logic) ---
+    async function captureResume(format) {
+        const resumeContainer = document.querySelector('.preview-column');
+        const resumeContent = document.getElementById('resume-preview-content');
+        const fullName = document.getElementById('full-name').value || 'resume';
 
-    // --- FULLY CORRECTED generatePreview FUNCTION ---
-    function generatePreview(data) {
-        const resumePreview = document.getElementById('resume-preview');
-        const previewContainer = document.getElementById('preview-container');
-        const emailIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 6px;"><path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555zM0 4.697v7.104l5.803-3.558L0 4.697zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757zm3.436-.586L16 11.801V4.697l-5.803 3.546z"/></svg>`;
-        const linkedinIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 6px;"><path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/></svg>`;
-        const githubIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 6px;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>`;
+        resumeContainer.classList.add('is-capturing');
 
-        // **THE FIX IS HERE:** The <style> tag is now placed OUTSIDE the main 'resume-paper' div.
-        // This makes the HTML structure valid and prevents the DOCX library from failing.
-        const resumeHTML = `
-            <style>
-                #resume-paper a{text-decoration:none;color:inherit}
-                #resume-paper h2{font-family:'Trebuchet MS',sans-serif;font-size:14pt;color:#2c3e50;font-weight:bold;margin:25px 0 10px;padding-bottom:5px;border-bottom:1.5px solid #ccc}
-                #resume-paper h3{font-size:11pt;font-weight:bold;margin:15px 0 2px}
-                #resume-paper p{margin-top:0;margin-bottom:10px}
-                #resume-paper .skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-                #resume-paper .skills-grid h3{margin-top:0}
-            </style>
-            <div id="resume-paper" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 10.5pt; line-height: 1.6; color: #333; width: 8.5in; height: 11in; padding: 20px; box-sizing: border-box; background: #fff;">
-                <header style="display:flex;width:100%;align-items:stretch">
-                    <div style="background-color:#2c3e50;padding:20px;display:flex;align-items:center;justify-content:center;min-width:180px">${data.profilePic ? `<img src="${data.profilePic}" alt="Profile" style="width:130px;height:130px;border-radius:50%;object-fit:cover">` : ""}</div>
-                    <div style="background-color:#ffc107;color:#2c3e50;padding:25px 30px;flex-grow:1;display:flex;flex-direction:column;justify-content:center">
-                        <h1 style="font-family:'Arial Black',Gadget,sans-serif;font-size:38pt;text-transform:uppercase;margin:0;line-height:1.1">${data.name}</h1>
-                        <p style="font-size:14pt;margin:5px 0 15px">${data.role}</p>
-                        <div style="font-size:10pt;display:flex;flex-direction:column;align-items:flex-start;gap:5px">
-                            <a href="mailto:${data.email}" style="display:flex;align-items:center">${emailIcon} ${data.email}</a>
-                            <a href="${data.linkedin}" target="_blank" style="display:flex;align-items:center">${linkedinIcon} ${data.linkedin}</a>
-                            <a href="${data.github}" target="_blank" style="display:flex;align-items:center">${githubIcon} ${data.github}</a>
-                        </div>
-                    </div>
-                </header>
-                <p style="text-align:center;color:#555;font-size:10pt;padding:10px 0;border-bottom:1px solid #eee;margin:0">${data.address} • ${data.phone}</p>
-                <main style="padding:0 25px 25px">
-                    <section><h2>I. Career Objective</h2><p>${data.summary.replace(/\n/g, "<br>")}</p></section>
-                    <section><h2>II. Work Experience</h2>${data.experience.map(e => `<div><h3>${e.title}</h3><p style="margin-top:0;margin-bottom:5px"><em>${e.company}</em></p><p>${e.desc.replace(/\n/g, "<br>")}</p></div>`).join("")}</section>
-                    <section><h2>III. Projects</h2>${data.projects.map(p => `<div><h3>${p.title}</h3><p>${p.desc.replace(/\n/g, "<br>")}</p></div>`).join("")}</section>
-                    <section><h2>IV. Technical Skills</h2><div class="skills-grid"><div><h3>Programming Languages</h3><p>${data.programmingSkills.replace(/\n/g, "<br>")}</p></div><div><h3>Web Technologies</h3><p>${data.webSkills.replace(/\n/g, "<br>")}</p></div><div><h3>Soft Skills</h3><p>${data.softSkills.replace(/\n/g, "<br>")}</p></div></div></section>
-                    <section><h2>V. Education</h2>${data.education.map(e => `<div><h3>${e.school}</h3><p>${e.degree} in ${e.field} - ${e.year}</p></div>`).join("")}</section>
-                </main>
-            </div>`;
-        resumePreview.innerHTML = resumeHTML;
-        previewContainer.style.display = 'block';
-        if (window.innerWidth <= 768) { previewContainer.scrollIntoView({ behavior: 'smooth' }); }
-    }
+        const canvas = await html2canvas(resumeContent, {
+            scale: 2, useCORS: true, logging: false, width: resumeContent.scrollWidth, height: resumeContent.scrollHeight
+        });
 
-    // --- MASTER DOWNLOAD FUNCTION (Also refined for robustness) ---
-    async function downloadResume(format) {
-        const resumePreview = document.getElementById('resume-preview');
-        if (!resumePreview.innerHTML.includes('resume-paper')) {
-            alert("Please generate your resume first before downloading!");
-            return;
-        }
+        resumeContainer.classList.remove('is-capturing');
 
-        const container = document.createElement('div');
-        container.className = 'print-container';
-        document.body.appendChild(container);
+        if (format === 'jpeg') {
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
+            link.download = `${fullName.replace(/\s/g, '_')}.jpeg`;
+            link.click();
+        } else if (format === 'pdf') {
+            const imgData = canvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-        // We capture the entire preview content, including the essential <style> tag
-        container.innerHTML = resumePreview.innerHTML;
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+            const canvasRatio = canvasHeight / canvasWidth;
 
-        try {
-            const contentToCapture = container.querySelector('#resume-paper'); // Target the specific div for PDF/JPEG
+            let finalWidth = pageWidth;
+            let finalHeight = pageWidth * canvasRatio;
 
-            if (format === 'pdf') {
-                const opt = { margin: 0, filename: 'Tanishk_Pal_Resume.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 4, useCORS: true }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
-                await html2pdf().from(contentToCapture).set(opt).save();
-            } else if (format === 'jpeg') {
-                const canvas = await html2canvas(contentToCapture, { scale: 4, useCORS: true });
-                const link = document.createElement('a');
-                link.href = canvas.toDataURL('image/jpeg', 0.98);
-                link.download = 'Tanishk_Pal_Resume.jpeg';
-                link.click();
-            } else if (format === 'docx') {
-                // For DOCX, we process a clone to avoid affecting the visible resume
-                const docxClone = contentToCapture.cloneNode(true);
-
-                // Remove the image element from the clone
-                const imageElement = docxClone.querySelector('img');
-                if (imageElement) {
-                    imageElement.remove();
-                }
-
-                // Get the cleaned HTML and pass it to the library
-                const fullHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Resume</title></head><body>${docxClone.innerHTML}</body></html>`;
-                const blob = await htmlDocx.asBlob(fullHtml);
-                saveAs(blob, 'Tanishk_Pal_Resume.docx');
+            if (finalHeight > pageHeight) {
+                finalHeight = pageHeight;
+                finalWidth = pageHeight / canvasRatio;
             }
-        } catch (error) {
-            console.error(`Error during ${format} generation:`, error);
-            alert(`Sorry, there was an error creating the ${format} file. Please try again.`);
-        } finally {
-            // IMPORTANT: Clean up by removing the temporary container
-            document.body.removeChild(container);
+
+            const xOffset = (pageWidth - finalWidth) / 2;
+            pdf.addImage(imgData, 'PNG', xOffset, 0, finalWidth, finalHeight);
+            pdf.save(`${fullName.replace(/\s/g, '_')}.pdf`);
         }
     }
 
-    // --- Simplified event listeners for all download buttons (Unchanged) ---
-    document.getElementById('download-pdf-btn').addEventListener('click', () => downloadResume('pdf'));
-    document.getElementById('download-jpeg-btn').addEventListener('click', () => downloadResume('jpeg'));
-    document.getElementById('download-docx-btn').addEventListener('click', () => downloadResume('docx'));
-    document.getElementById('share-btn').addEventListener('click', async () => { if (navigator.share) { try { await navigator.share({ title: 'My Resume', text: 'Check out my resume!', url: window.location.href }); } catch (error) { console.error('Error sharing:', error); } } else { alert('Web Share API is not supported in your browser.'); } });
+    document.getElementById('download-pdf-btn').addEventListener('click', () => captureResume('pdf'));
+    document.getElementById('download-jpeg-btn').addEventListener('click', () => captureResume('jpeg'));
+    document.getElementById('share-btn').addEventListener('click', () => { alert("Share functionality coming soon!"); });
 
-    // --- Load saved data on page start (Unchanged) ---
-    loadFormData();
+    // --- (All other button listeners and helper functions are here and correct) ---
+    document.getElementById('import-github-btn').addEventListener('click', async () => {
+        const username = document.getElementById('github-username').value;
+        if (!username) return alert('Please enter a GitHub username.');
+        try {
+            const res = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&direction=desc`);
+            if (!res.ok) throw new Error('User not found');
+            const repos = await res.json();
+            const list = document.getElementById('projects-list');
+            list.innerHTML = '';
+            repos.slice(0, 5).forEach(repo => { list.appendChild(createProjectEntry(repo.name, repo.description || '', repo.html_url)); });
+        } catch (error) { alert(`Could not fetch projects: ${error.message}`); }
+    });
+
+    document.getElementById('add-experience-btn').addEventListener('click', () => { document.getElementById('experience-list').appendChild(createExperienceEntry()); });
+    document.getElementById('add-achievement-btn').addEventListener('click', () => { document.getElementById('achievements-list').appendChild(createSingleInputEntry("e.g., Winner of Smart India Hackathon 2024", "achievement-text")); });
+    document.getElementById('add-course-btn').addEventListener('click', () => { document.getElementById('courses-list').appendChild(createSingleInputEntry("e.g., AWS Certified Cloud Practitioner", "course-text")); });
+    document.getElementById('add-passion-btn').addEventListener('click', () => { document.getElementById('passions-list').appendChild(createSingleInputEntry("e.g., Open Source Contribution", "passion-text")); });
+    document.getElementById('add-education-btn').addEventListener('click', () => { document.getElementById('education-list').appendChild(createEducationEntry()); });
+    document.getElementById('add-project-btn').addEventListener('click', () => { document.getElementById('projects-list').appendChild(createProjectEntry()); });
+
+    function createExperienceEntry(title = '', company = '', dates = '', desc = '') {
+        const entry = document.createElement('div');
+        entry.className = 'dynamic-entry';
+        entry.innerHTML = `<input type="text" placeholder="Job Title" class="exp-title" value="${title}"><input type="text" placeholder="Company" class="exp-company" value="${company}"><input type="text" placeholder="Dates (e.g., Jan 2020 - Present)" class="exp-dates" value="${dates}"><textarea placeholder="Description of your role and achievements..." class="exp-desc" rows="4">${desc}</textarea><button class="remove-btn">Remove</button>`;
+        entry.querySelector('.remove-btn').addEventListener('click', () => entry.remove());
+        return entry;
+    }
+
+    function createEducationEntry(institution = '', degree = '', date = '') {
+        const entry = document.createElement('div');
+        entry.className = 'dynamic-entry';
+        entry.innerHTML = `<div class="form-group" style="margin-bottom: 10px;"><label style="font-size: 0.8rem;">Education Type</label><select class="edu-type" style="width: 100%; padding: 8px; border: 1px solid #e0e0e0; border-radius: 4px;"><option value="college">College / University</option><option value="school">Schooling (10th / 12th)</option></select></div><input type="text" placeholder="Institution Name" class="edu-institution" value="${institution}"><input type="text" placeholder="Degree / Certificate" class="edu-degree" value="${degree}"><input type="text" placeholder="Year of Completion" class="edu-date" value="${date}"><button class="remove-btn">Remove</button>`;
+        entry.querySelector('.remove-btn').addEventListener('click', () => entry.remove());
+        return entry;
+    }
+
+    function createProjectEntry(name = '', desc = '', link = '') {
+        const entry = document.createElement('div');
+        entry.className = 'dynamic-entry';
+        entry.innerHTML = `<input type="text" placeholder="Project Name" class="project-name" value="${name}"><textarea placeholder="Project Description" class="project-desc" rows="3">${desc}</textarea><input type="url" placeholder="Project Link" class="project-link" value="${link}"><button class="remove-btn">Remove</button>`;
+        entry.querySelector('.remove-btn').addEventListener('click', () => entry.remove());
+        return entry;
+    }
+
+    function createSingleInputEntry(placeholder, className) {
+        const entry = document.createElement('div');
+        entry.className = 'dynamic-entry';
+        entry.innerHTML = `<input type="text" placeholder="${placeholder}" class="${className}" value=""><button class="remove-btn">Remove</button>`;
+        entry.querySelector('.remove-btn').addEventListener('click', () => entry.remove());
+        return entry;
+    }
+
+    function generateAISummary(name, role, skills, projects, achievement, passion) {
+        if (!name || !role) return '';
+        const topSkills = skills.slice(0, 3).join(', ');
+        let summary = `Results-oriented ${role} with a robust technical foundation in ${topSkills}. `;
+        if (achievement) summary += `Demonstrated capacity for solving complex problems, highlighted by success in ${achievement.toLowerCase()}. `;
+        if (projects.length > 0) {
+            const projectNames = projects.length > 1 ? `projects like '${projects[0].name}' and '${projects[1].name}'` : `'${projects[0].name}'`;
+            summary += `Hands-on experience leveraging modern technologies in ${projectNames}. `;
+        }
+        if (passion) summary += `Passionate about ${passion} and eager to drive innovation in a challenging engineering environment.`;
+        else summary += `Eager to leverage these skills to contribute to a forward-thinking engineering team.`;
+        return summary;
+    }
+
+    document.getElementById('generate-resume-btn').addEventListener('click', () => {
+        const preview = document.getElementById('resume-preview-content');
+        const data = {
+            fullName: document.getElementById('full-name').value,
+            targetRole: document.getElementById('target-role').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            linkedin: document.getElementById('linkedin-url').value,
+            location: document.getElementById('address').value,
+            achievement: document.getElementById('achievement').value,
+            passion: document.getElementById('passion').value,
+            skills: document.getElementById('skills').value.split(',').map(s => s.trim()).filter(s => s),
+            experiences: Array.from(document.querySelectorAll('#experience-list .dynamic-entry')).map(e => ({ title: e.querySelector('.exp-title').value, company: e.querySelector('.exp-company').value, dates: e.querySelector('.exp-dates').value, desc: e.querySelector('.exp-desc').value.split('\n').map(line => `<li>${line}</li>`).join('') })),
+            education: Array.from(document.querySelectorAll('#education-list .dynamic-entry')).map(e => ({ type: e.querySelector('.edu-type').value, institution: e.querySelector('.edu-institution').value, degree: e.querySelector('.edu-degree').value, date: e.querySelector('.edu-date').value })),
+            projects: Array.from(document.querySelectorAll('#projects-list .dynamic-entry')).map(p => ({ name: p.querySelector('.project-name').value, desc: p.querySelector('.project-desc').value, link: p.querySelector('.project-link').value })),
+            achievements: Array.from(document.querySelectorAll('#achievements-list .dynamic-entry')).map(e => e.querySelector('.achievement-text').value).filter(val => val),
+            courses: Array.from(document.querySelectorAll('#courses-list .dynamic-entry')).map(e => e.querySelector('.course-text').value).filter(val => val),
+            passions: Array.from(document.querySelectorAll('#passions-list .dynamic-entry')).map(e => e.querySelector('.passion-text').value).filter(val => val)
+        };
+        data.summary = generateAISummary(data.fullName, data.targetRole, data.skills, data.projects, data.achievement, data.passion);
+        const profilePicFile = document.getElementById('profile-picture').files[0];
+        const reader = new FileReader();
+        reader.onload = e => { data.profilePicUrl = e.target.result; preview.innerHTML = buildResumeHTML(data); };
+        if (profilePicFile) { reader.readAsDataURL(profilePicFile); }
+        else { data.profilePicUrl = 'https://via.placeholder.com/120'; preview.innerHTML = buildResumeHTML(data); }
+    });
+
+    // --- THE FINAL, FULLY UPGRADED buildResumeHTML FUNCTION ---
+    function buildResumeHTML(data) {
+        const collegeEntries = (data.education || []).filter(edu => edu.type === 'college');
+        const schoolEntries = (data.education || []).filter(edu => edu.type === 'school');
+        const educationHTML = (collegeEntries.length > 0 || schoolEntries.length > 0) ? `
+            <div class="resume-section">
+                <h2>V. EDUCATION</h2>
+                ${collegeEntries.map(edu => `<div class="education-entry"><p class="institution-info">${edu.institution || ''}</p><p class="degree">${edu.degree || ''}</p><p class="edu-grad-date">Expected ${edu.date || ''}</p></div>`).join('')}
+                ${schoolEntries.length > 0 ? `<h4 class="skill-category-block" style="margin-top: 20px;">Schooling</h4>${schoolEntries.map(edu => `<div class="education-entry" style="margin-bottom: 10px;"><p class="institution-info">${edu.institution || ''} (${edu.degree || ''})</p><p class="edu-grad-date">${edu.date || ''}</p></div>`).join('')}` : ''}
+            </div>` : '';
+        const skillsHTML = (data.skills?.length > 0) ? `
+            <div class="resume-section">
+                <h2>IV. TECHNICAL SKILLS</h2>
+                ${Object.keys(SKILL_CATEGORIES).map(category => {
+            const relevantSkills = data.skills.filter(skill => SKILL_CATEGORIES[category].includes(skill.toLowerCase().trim()));
+            if (relevantSkills.length === 0) return '';
+            return `<div class="skill-category-block"><h3>${category}</h3><p>${relevantSkills.join(', ')}</p></div>`;
+        }).join('')}
+            </div>` : '';
+        const summaryHTML = `<div class="resume-section"><h2>SUMMARY</h2><p>${data.summary || ''}</p></div>`;
+        const experiencesHTML = (data.experiences?.length > 0) ? `<div class="resume-section"><h2>EXPERIENCE</h2>${data.experiences.map(exp => `<div class="job"><p class="job-title">${exp.title || ''}</p><p class="company-info">${exp.company || ''} | ${exp.dates || ''}</p><ul>${exp.desc || ''}</ul></div>`).join('')}</div>` : '';
+        const projectsHTML = (data.projects?.length > 0) ? `<div class="resume-section"><h2>PROJECTS</h2>${data.projects.map(p => `<div class="project-entry"><p class="project-title">${p.name || ''}</p><p>${p.desc || ''}</p>${p.link ? `<a href="${p.link}" target="_blank" class="project-link">${p.link}</a>` : ''}</div>`).join('')}</div>` : '';
+        const achievementsHTML = (data.achievements?.length > 0) ? `<div class="resume-section"><h2>ACHIEVEMENTS</h2><ul class="achievements-list">${data.achievements.map(ach => `<li><i class="fas fa-trophy"></i>${ach}</li>`).join('')}</ul></div>` : '';
+        const coursesHTML = (data.courses?.length > 0) ? `<div class="resume-section"><h2>COURSES & CERTIFICATIONS</h2><ul class="courses-list">${data.courses.map(course => `<li><i class="fas fa-certificate"></i>${course}</li>`).join('')}</ul></div>` : '';
+        const passionsHTML = (data.passions?.length > 0) ? `<div class="resume-section"><h2>PASSIONS</h2><ul class="passions-list">${data.passions.map(passion => `<li><i class="fas fa-heart"></i>${passion}</li>`).join('')}</ul></div>` : '';
+
+        // --- EDITED: The Final Assembly with Education on the Left ---
+        return `
+            <div class="resume-header">
+                <div class="contact-info"><h1>${(data.fullName || 'YOUR NAME').toUpperCase()}</h1><p>${data.targetRole || 'Target Role'}</p></div>
+                <img src="${data.profilePicUrl}" alt="Profile" class="profile-pic">
+            </div>
+            <div class="resume-contact-bar">
+                <p><i class="fas fa-phone"></i> ${data.phone || ''}</p><p><i class="fas fa-envelope"></i> ${data.email || ''}</p><p><i class="fab fa-linkedin"></i> ${data.linkedin || ''}</p><p><i class="fas fa-map-marker-alt"></i> ${data.location || ''}</p>
+            </div>
+            <div class="resume-body">
+                <div class="resume-main-column">
+                    ${summaryHTML}
+                    ${experiencesHTML}
+                    ${educationHTML} 
+                    ${achievementsHTML}
+                    ${coursesHTML}
+                    ${passionsHTML}
+                </div>
+                <div class="resume-side-column">
+                    ${projectsHTML}
+                    ${skillsHTML}
+                </div>
+            </div>
+        `;
+    }
 });

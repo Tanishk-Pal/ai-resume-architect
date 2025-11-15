@@ -5,130 +5,138 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Resume Architect</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-
-    <!-- Libraries for PDF and JPEG Generation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
-    <!-- ADD THESE LINES: Libraries for DOCX Generation and Saving Files -->
-    <script src="https://unpkg.com/html-docx-js-typescript@1.8.0/dist/html-docx.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
 <body>
-
-    <header class="header">
-        <div class="header-title">
-            <h1>AI Resume Architect</h1>
-            <span class="developer-credit-top">A Tanishk Pal Project</span>
-        </div>
-        <div class="top-nav">
-            <button type="button" class="nav-btn active">Resume Generator</button>
-            <button type="button" class="nav-btn">Content Rewriter</button>
-        </div>
-        <a href="#" class="header-link">Your Personal Career Coach</a>
+    <!-- NEW: ADD THIS HEADER SECTION -->
+    <header class="site-header">
+        <h1><u>AI Resume Architect</h1></u>
+        <p>
+            Developed by <u>Tanishk Pal </u>
+        </p>
     </header>
 
-    <main class="main-content">
-        <!-- The Form Container -->
-        <section class="form-container">
-            <div class="form-header">
-                <h2>Enter Your Details</h2>
-            </div>
-
-            <div class="form-section">
-                <h3>Quick Start / Import</h3>
-                <label for="github-username-import">Import Projects from GitHub</label>
-                <div class="input-group">
-                    <input type="text" id="github-username-import" placeholder="Your GitHub Username">
-                    <button type="button" id="import-github-btn" class="import-btn">Import</button>
+    <main class="container">
+        <!-- LEFT INPUT FORM -->
+        <div class="form-column">
+            <div class="card">
+                <h2>Quick Start / Import</h2>
+                <div class="form-group">
+                    <label>From GitHub (Recommended)</label>
+                    <div class="input-with-button">
+                        <input type="text" id="github-username" placeholder="your-username">
+                        <button id="import-github-btn">Import Projects</button>
+                    </div>
                 </div>
             </div>
 
-            <div class="form-section">
-                <h3>Target Role</h3>
-                <input type="text" id="target-role-input" placeholder="e.g., Software Engineer">
-            </div>
-
-            <div class="form-section">
-                <h3>Contact Information</h3>
-                <div class="grid-container">
-                    <input type="text" id="name-input" placeholder="Full Name">
-                    <input type="email" id="email-input" placeholder="Email">
-                    <input type="tel" id="phone-input" placeholder="Phone">
-                    <input type="text" id="address-input" placeholder="Address">
-                    <input type="url" id="linkedin-input" placeholder="LinkedIn URL">
-                    <input type="url" id="github-input" placeholder="GitHub URL">
+            <div class="card">
+                <div class="form-group">
+                    <label for="target-role">Target Role</label>
+                    <input type="text" id="target-role" placeholder="e.g., B.Tech Fresher in Cloud Solutions">
                 </div>
-                <label for="profile-picture-input" class="file-upload-label">
-                    <span>Upload Profile Picture</span>
-                    <span id="file-name-display"></span>
-                </label>
-                <input type="file" id="profile-picture-input" class="file-input" accept="image/*">
-            </div>
-
-            <div class="form-section">
-                <div class="section-header">
-                    <h3>Career Objective / Bio</h3>
-                    <button type="button" id="generate-summary-btn" class="ai-btn">✨ Generate with AI</button>
+                <h2>Contact Information</h2>
+                <div class="grid-col-2">
+                    <div class="form-group"><label for="full-name">Full Name</label><input type="text" id="full-name">
+                    </div>
+                    <div class="form-group"><label for="email">Email</label><input type="email" id="email"></div>
+                    <div class="form-group"><label for="phone">Phone</label><input type="tel" id="phone"></div>
+                    <div class="form-group"><label for="address">Location</label><input type="text" id="address"></div>
+                    <div class="form-group" style="grid-column: 1 / -1;"><label for="linkedin-url">LinkedIn
+                            URL</label><input type="url" id="linkedin-url"></div>
                 </div>
-                <textarea id="summary-input" placeholder="A highly motivated and ambitious..."></textarea>
-            </div>
-
-            <div class="form-section">
-                <h3>Work Experience</h3>
-                <div id="experience-list" class="dynamic-list"></div>
-                <button type="button" id="add-experience-btn" class="add-btn">+ Add Experience</button>
-            </div>
-
-            <div class="form-section">
-                <h3>Education</h3>
-                <div id="education-list" class="dynamic-list"></div>
-                <button type="button" id="add-education-btn" class="add-btn">+ Add Education</button>
-            </div>
-
-            <div class="form-section">
-                <h3>Technical Skills</h3>
-                <div class="skills-grid">
-                    <textarea id="programming-skills-input"
-                        placeholder="Programming Languages (e.g., Python, Java, C++)"></textarea>
-                    <textarea id="web-skills-input" placeholder="Web Technologies (e.g., HTML, CSS, React)"></textarea>
-                    <textarea id="soft-skills-input"
-                        placeholder="Soft Skills (e.g., Problem Solving, Teamwork)"></textarea>
+                <div class="form-group">
+                    <label for="profile-picture">Upload Profile Picture</label>
+                    <input type="file" id="profile-picture" accept="image/*">
                 </div>
             </div>
 
-            <div class="form-section">
-                <h3>Projects</h3>
-                <div id="projects-list" class="dynamic-list"></div>
-                <button type="button" id="add-project-btn" class="add-btn">+ Add Project</button>
-            </div>
-
-            <div class="form-footer">
-                <button type="button" id="generate-resume-btn" class="generate-btn">Generate Resume</button>
-            </div>
-        </section>
-
-        <!-- Resume Preview and Actions Container -->
-        <section id="preview-container" class="preview-container" style="display: none;">
-            <div id="resume-preview"></div>
-            <div class="actions-container">
-                <h3>Actions</h3>
-                <div class="action-buttons">
-                    <button type="button" id="download-pdf-btn" class="action-btn pdf-btn">Download PDF</button>
-                    <button type="button" id="download-jpeg-btn" class="action-btn jpeg-btn">Download JPEG</button>
-                    <!-- ADD THIS BUTTON: Word Download Button -->
-                    <button type="button" id="download-docx-btn" class="action-btn docx-btn">Download Word
-                        (.docx)</button>
-                    <button type="button" id="share-btn" class="action-btn share-btn">Share</button>
+            <div class="card">
+                <h2>Master Your Summary</h2>
+                <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">(Optional) Add these details to make
+                    your summary stand out.</p>
+                <div class="form-group">
+                    <label for="achievement">Proudest Technical Achievement</label>
+                    <input type="text" id="achievement" placeholder="e.g., Optimized an algorithm to run 30% faster">
+                </div>
+                <div class="form-group">
+                    <label for="passion">Career Ambition / Passion</label>
+                    <input type="text" id="passion" placeholder="e.g., building scalable cloud-native architectures">
                 </div>
             </div>
-        </section>
+
+            <div class="card">
+                <h2>Experience</h2>
+                <div id="experience-list"></div>
+                <button id="add-experience-btn" class="add-btn">+ Add Experience</button>
+            </div>
+
+            <!-- NEW SECTIONS -->
+            <div class="card">
+                <h2>Achievements</h2>
+                <div id="achievements-list"></div>
+                <button id="add-achievement-btn" class="add-btn">+ Add Achievement</button>
+            </div>
+            <div class="card">
+                <h2>Courses & Certifications</h2>
+                <div id="courses-list"></div>
+                <button id="add-course-btn" class="add-btn">+ Add Course</button>
+            </div>
+            <div class="card">
+                <h2>Passions & Interests</h2>
+                <div id="passions-list"></div>
+                <button id="add-passion-btn" class="add-btn">+ Add Passion / Interest</button>
+            </div>
+
+            <div class="card">
+                <h2>Education</h2>
+                <div id="education-list"></div>
+                <button id="add-education-btn" class="add-btn">+ Add Education</button>
+            </div>
+
+            <div class="card">
+                <h2>Skills</h2>
+                <div class="form-group">
+                    <textarea id="skills" rows="3"
+                        placeholder="Comma-separated: Java, Python, AWS, Cloud Computing"></textarea>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Projects</h2>
+                <div id="projects-list"></div>
+                <button id="add-project-btn" class="add-btn">+ Add Project</button>
+            </div>
+
+            <button id="generate-resume-btn" class="generate-btn">Generate Resume</button>
+        </div>
+
+        <!-- RIGHT PREVIEW PANE -->
+        <div class="preview-column">
+            <div id="resume-preview-content">
+                <p class="placeholder">Your professional resume preview will appear here.</p>
+            </div>
+        </div>
     </main>
+    <div class="actions-card">
+        <h3>Actions</h3>
+        <div class="action-buttons">
+            <button id="download-pdf-btn" class="action-btn pdf">Download PDF</button>
+            <button id="download-jpeg-btn" class="action-btn jpeg">Download JPEG</button>
+            <button id="share-btn" class="action-btn share">Share</button>
+        </div>
+    </div>
+
+    <!-- NEW: ADD THIS FOOTER SECTION -->
+    <footer class="site-footer">
+        <p>Developed by Tanishk Pal</p>
+    </footer>
+
 
     <script src="script.js"></script>
 </body>
