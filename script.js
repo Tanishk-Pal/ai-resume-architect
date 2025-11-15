@@ -1,6 +1,7 @@
 // Replace your entire script.js file with this code.
 
 document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
 
     // --- DOM Elements ---
     const loader = document.getElementById('loader');
@@ -228,4 +229,5 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!isMobile()) {
         debouncedGenerateResume(); // Start with an initial generation on desktop
     }
+},0);
 });
